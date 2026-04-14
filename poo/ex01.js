@@ -13,3 +13,8 @@ class NomeDaClasse {
 
 // Criando instâncias (objetos)
 const obj = new NomeDaClasse("valor1", "valor2");
+obj.nome = "Jackson";
+obj.raca = "Humana"
+
+obj.meuMetodo();
+
