@@ -14,7 +14,9 @@ try {
   conta1.transferir(conta2, 200);
 
   conta1.exibirSaldo();
+  conta1.exibirHistorico();
   conta2.exibirSaldo();
+  conta2.exibirHistorico();
 } catch (error) {
   console.log("Error: " + error);
 }
