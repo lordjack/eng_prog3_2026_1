@@ -1,7 +1,7 @@
 export class Conta {
-  #pessoa;
-  #saldo;
-  #historico;
+  #pessoa
+  #saldo
+  #historico
 
   constructor(pessoa) {
     this.#pessoa = pessoa
@@ -9,21 +9,28 @@ export class Conta {
     this.#historico = []
   }
 
-  get pessoa(){
-    return this.#pessoa;
+  get pessoa() {
+    return this.#pessoa
   }
 
-  set pessoa(pessoa){
-    this.#pessoa = pessoa;
+  set pessoa(pessoa) {
+    this.#pessoa = pessoa
   }
 
-  
-  get saldo(){
-    return this.#saldo;
+  get saldo() {
+    return this.#saldo
   }
 
-  set saldo(saldo){
-    this.#saldo = saldo;
+  set saldo(saldo) {
+    this.#saldo = saldo
+  }
+
+  _addHistorico(msg) {
+    this.#historico.push(msg)
+  }
+
+  _alterarSaldo(valor) {
+    this.#saldo += valor
   }
 
   depositar = (valor) => {

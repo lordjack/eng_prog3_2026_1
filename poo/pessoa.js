@@ -11,4 +11,9 @@ export class Pessoa {
       return false;
     }
   }
+  exibirDados(){
+    console.log(
+      "Nome: "+this.nome +" | Idade: "+this.idade
+    )
+  }
 }
