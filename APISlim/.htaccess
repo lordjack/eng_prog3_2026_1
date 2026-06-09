@@ -1,0 +1,15 @@
+# Reescrita de URL para o Slim Framework
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Alguns ambientes hosting podem precisar dessa linha
+    RewriteBase /eng_prog3_2026_1/APISlim/public/
+
+    # Não reescrever requisições para arquivos reais ou diretórios
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redirecionar todas as requisições para index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
