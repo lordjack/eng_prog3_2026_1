@@ -1,0 +1,1972 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introdução ao HTML e CSS</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --surface2: #334155;
+        --accent: #f97316;
+        --accent2: #fb923c;
+        --blue: #60a5fa;
+        --green: #34d399;
+        --purple: #a78bfa;
+        --yellow: #fbbf24;
+        --red: #f87171;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --code-bg: #0d1117;
+        --border: #334155;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ─── NAV ─── */
+      #nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        background: rgba(15, 23, 42, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+      }
+      #nav .course {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+      }
+      #nav .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      #nav button {
+        background: var(--surface2);
+        color: var(--text);
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background 0.2s;
+      }
+      #nav button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      #nav button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      #nav .counter {
+        font-size: 13px;
+        color: var(--muted);
+        min-width: 70px;
+        text-align: center;
+      }
+
+      /* ─── SLIDES ─── */
+      #deck {
+        margin-top: 52px;
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+      .slide {
+        min-width: 100%;
+        height: calc(100vh - 52px);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 48px 80px;
+        overflow-y: auto;
+      }
+      .slide.active {
+        display: flex;
+      }
+
+      /* ─── COVER ─── */
+      .slide.cover {
+        background: radial-gradient(
+          ellipse at 55% 45%,
+          rgba(249, 115, 22, 0.25) 0%,
+          var(--bg) 65%
+        );
+        text-align: center;
+      }
+      .slide.cover h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 16px;
+      }
+      .slide.cover h1 span {
+        color: var(--accent2);
+      }
+      .slide.cover p {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto 32px;
+      }
+      .slide.cover .meta {
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .slide.cover .meta-item {
+        text-align: center;
+      }
+      .slide.cover .meta-item strong {
+        display: block;
+        font-size: 1.4rem;
+        color: var(--accent2);
+      }
+      .slide.cover .meta-item span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* ─── CONTENT ─── */
+      .slide.content {
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding-top: 60px;
+      }
+      .slide h2 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(90deg, var(--accent2), var(--yellow));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .divider {
+        height: 3px;
+        width: 60px;
+        background: var(--accent);
+        border-radius: 2px;
+        margin-bottom: 28px;
+      }
+      .slide p {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.7;
+        max-width: 900px;
+      }
+      .slide ul,
+      .slide ol {
+        padding-left: 22px;
+        margin-bottom: 14px;
+      }
+      .slide li {
+        margin-bottom: 8px;
+        line-height: 1.6;
+        font-size: 0.97rem;
+      }
+      .slide li strong {
+        color: var(--accent2);
+      }
+
+      /* ─── CARDS ─── */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .card:hover {
+        border-color: var(--accent2);
+        transform: translateY(-2px);
+      }
+      .card .icon {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+      .card h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--accent2);
+      }
+      .card p {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      /* ─── CODE ─── */
+      .code-wrap {
+        width: 100%;
+        margin: 8px 0;
+      }
+      .code-label {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        overflow-x: auto;
+        font-size: 0.83rem;
+        line-height: 1.6;
+        font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      }
+      .tag-c {
+        color: #ff79c6;
+      }
+      .attr {
+        color: #50fa7b;
+      }
+      .val {
+        color: #f1fa8c;
+      }
+      .cmt {
+        color: #6272a4;
+        font-style: italic;
+      }
+      .sel {
+        color: #8be9fd;
+      }
+      .prop {
+        color: #ff79c6;
+      }
+      .vval {
+        color: #f1fa8c;
+      }
+      .num {
+        color: #bd93f9;
+      }
+
+      /* ─── PILLS ─── */
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .pill {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--accent2);
+        border: 1px solid var(--border);
+      }
+      .pill.orange {
+        background: rgba(249, 115, 22, 0.15);
+        color: var(--accent2);
+        border-color: var(--accent);
+      }
+      .pill.blue {
+        background: rgba(96, 165, 250, 0.15);
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+      .pill.green {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--green);
+        border-color: var(--green);
+      }
+      .pill.yellow {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--yellow);
+        border-color: var(--yellow);
+      }
+      .pill.red {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--red);
+        border-color: var(--red);
+      }
+
+      /* ─── TWO-COL ─── */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        width: 100%;
+      }
+
+      /* ─── CALLOUT ─── */
+      .callout {
+        background: rgba(249, 115, 22, 0.1);
+        border-left: 4px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        padding: 12px 18px;
+        margin: 10px 0;
+        width: 100%;
+      }
+      .callout.blue {
+        background: rgba(96, 165, 250, 0.08);
+        border-color: var(--blue);
+      }
+      .callout.green {
+        background: rgba(52, 211, 153, 0.08);
+        border-color: var(--green);
+      }
+      .callout.yellow {
+        background: rgba(251, 191, 36, 0.08);
+        border-color: var(--yellow);
+      }
+      .callout p {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        color: var(--accent2);
+      }
+
+      /* ─── TABLE ─── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        margin: 10px 0;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 14px;
+        text-align: left;
+      }
+      td {
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+      }
+      tr:hover td {
+        background: rgba(249, 115, 22, 0.04);
+      }
+
+      /* ─── PROGRESS ─── */
+      #progress {
+        height: 3px;
+        background: var(--surface2);
+      }
+      #progress-bar {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.3s;
+      }
+
+      /* ─── PREVIEW BOX ─── */
+      .preview {
+        background: #fff;
+        border-radius: 10px;
+        padding: 18px 22px;
+        color: #111;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        border: 1px solid var(--border);
+        width: 100%;
+        margin: 8px 0;
+      }
+      .preview h1 {
+        font-size: 1.2rem;
+        margin-bottom: 6px;
+      }
+      .preview h2 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .preview p {
+        color: #333;
+        margin-bottom: 6px;
+        font-size: 0.85rem;
+      }
+      .preview a {
+        color: #2563eb;
+        text-decoration: underline;
+      }
+      .preview ul {
+        padding-left: 18px;
+        color: #333;
+        font-size: 0.85rem;
+      }
+      .preview table {
+        font-size: 0.8rem;
+      }
+      .preview th {
+        background: #e2e8f0;
+        color: #333;
+        padding: 6px 10px;
+      }
+      .preview td {
+        padding: 5px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #555;
+      }
+
+      /* ─── HINT ─── */
+      #hint {
+        position: fixed;
+        bottom: 12px;
+        right: 20px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* ─── CSS BOX MODEL ─── */
+      .box-model {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 10px 0;
+      }
+      .bm-margin {
+        background: rgba(251, 191, 36, 0.15);
+        border: 2px dashed var(--yellow);
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+      }
+      .bm-border {
+        background: rgba(248, 113, 113, 0.15);
+        border: 2px solid var(--red);
+        border-radius: 6px;
+        padding: 12px;
+      }
+      .bm-padding {
+        background: rgba(52, 211, 153, 0.15);
+        border: 2px dashed var(--green);
+        border-radius: 4px;
+        padding: 12px;
+      }
+      .bm-content {
+        background: rgba(96, 165, 250, 0.2);
+        border: 2px solid var(--blue);
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-size: 0.75rem;
+        color: var(--text);
+        text-align: center;
+      }
+      .bm-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-bottom: 4px;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="progress"><div id="progress-bar"></div></div>
+
+    <nav id="nav">
+      <span class="course"
+        >Prog. 3 · IFSC 2026.1 · Eng. Controle e Automação</span
+      >
+      <div class="controls">
+        <button id="btnPrev" onclick="navigate(-1)">← Anterior</button>
+        <span class="counter" id="counter">1 / 20</span>
+        <button id="btnNext" onclick="navigate(1)">Próximo →</button>
+      </div>
+    </nav>
+
+    <div id="deck">
+      <!-- ══════════════════════════════════════════════
+       SLIDE 1 — CAPA
+  ══════════════════════════════════════════════ -->
+      <div class="slide cover active">
+        <h1>Introdução ao<br /><span>HTML e CSS</span></h1>
+        <p>
+          Estrutura e estilo da web — os blocos fundamentais de qualquer página
+          e aplicação web.
+        </p>
+        <div class="meta">
+          <div class="meta-item">
+            <strong>HTML 5</strong><span>Estrutura</span>
+          </div>
+          <div class="meta-item"><strong>CSS 3</strong><span>Estilo</span></div>
+          <div class="meta-item">
+            <strong>Front-end</strong><span>Foco da Aula</span>
+          </div>
+        </div>
+        <p style="margin-top: 24px; color: var(--muted); font-size: 0.95rem">
+          Professor:
+          <strong style="color: var(--accent2)">Jackson Meires</strong>
+        </p>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 2 — O QUE É HTML?
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>O que é HTML?</h2>
+        <div class="divider"></div>
+        <p>
+          <strong>HTML</strong> (<em>HyperText Markup Language</em>) é a
+          linguagem de <strong>marcação</strong> usada para estruturar o
+          conteúdo de páginas web. Não é uma linguagem de programação — é uma
+          linguagem de descrição de estrutura.
+        </p>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">📄</div>
+            <h3>Estrutura</h3>
+            <p>
+              Define o que é um título, parágrafo, lista, tabela, formulário,
+              link...
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🏷️</div>
+            <h3>Tags (Marcadores)</h3>
+            <p>
+              Todo elemento é definido por uma tag: <code>&lt;h1&gt;</code>,
+              <code>&lt;p&gt;</code>, <code>&lt;div&gt;</code>...
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🌐</div>
+            <h3>Padrão W3C</h3>
+            <p>
+              Mantido pelo W3C (World Wide Web Consortium). Versão atual: HTML5.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🔗</div>
+            <h3>Base da Web</h3>
+            <p>
+              Todo site, toda aplicação web começa com HTML. CSS e JS
+              complementam.
+            </p>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>Analogia:</strong> HTML é o <em>esqueleto</em> de uma
+            página. CSS é a <em>pele e roupa</em>. JavaScript é o
+            <em>movimento</em>.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 3 — ESTRUTURA BÁSICA
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Estrutura Básica de um Documento HTML</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">index.html</div>
+            <pre><code><span class="tag-c">&lt;!DOCTYPE html&gt;</span>
+<span class="tag-c">&lt;html</span> <span class="attr">lang</span>=<span class="val">"pt-br"</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;head&gt;</span>
+    <span class="tag-c">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span>
+          <span class="attr">content</span>=<span class="val">"width=device-width, initial-scale=1.0"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;title&gt;</span>Minha Página<span class="tag-c">&lt;/title&gt;</span>
+    <span class="tag-c">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;/head&gt;</span>
+
+  <span class="tag-c">&lt;body&gt;</span>
+    <span class="tag-c">&lt;h1&gt;</span>Olá, Mundo!<span class="tag-c">&lt;/h1&gt;</span>
+    <span class="tag-c">&lt;p&gt;</span>Meu primeiro parágrafo.<span class="tag-c">&lt;/p&gt;</span>
+    <span class="tag-c">&lt;script</span> <span class="attr">src</span>=<span class="val">"app.js"</span><span class="tag-c">&gt;&lt;/script&gt;</span>
+  <span class="tag-c">&lt;/body&gt;</span>
+
+<span class="tag-c">&lt;/html&gt;</span></code></pre>
+          </div>
+          <div>
+            <table>
+              <tr>
+                <th>Elemento</th>
+                <th>Função</th>
+              </tr>
+              <tr>
+                <td><code>&lt;!DOCTYPE html&gt;</code></td>
+                <td>Declara que é HTML5</td>
+              </tr>
+              <tr>
+                <td><code>&lt;html&gt;</code></td>
+                <td>Raiz do documento</td>
+              </tr>
+              <tr>
+                <td><code>&lt;head&gt;</code></td>
+                <td>Metadados (invisíveis ao usuário)</td>
+              </tr>
+              <tr>
+                <td><code>&lt;meta charset&gt;</code></td>
+                <td>Codificação UTF-8 (suporta acentos)</td>
+              </tr>
+              <tr>
+                <td><code>&lt;meta viewport&gt;</code></td>
+                <td>Responsividade mobile</td>
+              </tr>
+              <tr>
+                <td><code>&lt;title&gt;</code></td>
+                <td>Título na aba do browser</td>
+              </tr>
+              <tr>
+                <td><code>&lt;body&gt;</code></td>
+                <td>Conteúdo visível da página</td>
+              </tr>
+            </table>
+            <div class="callout yellow">
+              <p>
+                <strong>Dica:</strong> No VS Code, digite <code>!</code> e
+                pressione <kbd>Tab</kbd> em um arquivo <code>.html</code> para
+                gerar essa estrutura automaticamente (Emmet).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 4 — TAGS DE TEXTO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Tags de Texto e Títulos</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">texto.html</div>
+            <pre><code><span class="cmt">&lt;!-- Títulos: h1 ao h6 --&gt;</span>
+<span class="tag-c">&lt;h1&gt;</span>Título Principal<span class="tag-c">&lt;/h1&gt;</span>
+<span class="tag-c">&lt;h2&gt;</span>Subtítulo<span class="tag-c">&lt;/h2&gt;</span>
+<span class="tag-c">&lt;h3&gt;</span>Seção<span class="tag-c">&lt;/h3&gt;</span>
+
+<span class="cmt">&lt;!-- Parágrafos --&gt;</span>
+<span class="tag-c">&lt;p&gt;</span>Este é um parágrafo de texto.<span class="tag-c">&lt;/p&gt;</span>
+
+<span class="cmt">&lt;!-- Ênfase --&gt;</span>
+<span class="tag-c">&lt;strong&gt;</span>Texto em negrito<span class="tag-c">&lt;/strong&gt;</span>
+<span class="tag-c">&lt;em&gt;</span>Texto em itálico<span class="tag-c">&lt;/em&gt;</span>
+
+<span class="cmt">&lt;!-- Quebra de linha --&gt;</span>
+<span class="tag-c">&lt;br&gt;</span>
+
+<span class="cmt">&lt;!-- Linha horizontal --&gt;</span>
+<span class="tag-c">&lt;hr&gt;</span>
+
+<span class="cmt">&lt;!-- Código inline --&gt;</span>
+<span class="tag-c">&lt;code&gt;</span>echo "Olá";<span class="tag-c">&lt;/code&gt;</span>
+
+<span class="cmt">&lt;!-- Span: container inline --&gt;</span>
+Cor: <span class="tag-c">&lt;span</span> <span class="attr">style</span>=<span class="val">"color:red"</span><span class="tag-c">&gt;</span>vermelho<span class="tag-c">&lt;/span&gt;</span></code></pre>
+          </div>
+          <div>
+            <p><strong>Resultado no browser:</strong></p>
+            <div class="preview">
+              <h1>Título Principal</h1>
+              <h2>Subtítulo</h2>
+              <p>Este é um parágrafo de texto.</p>
+              <p><strong>Texto em negrito</strong> e <em>itálico</em></p>
+              <hr style="margin: 8px 0; border-color: #ccc" />
+              <p>
+                Código:
+                <code
+                  style="
+                    background: #f1f5f9;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    font-family: monospace;
+                  "
+                  >echo "Olá";</code
+                >
+              </p>
+              <p>Cor: <span style="color: red">vermelho</span></p>
+            </div>
+            <div class="callout">
+              <p>
+                <strong>h1 por página:</strong> Use apenas um
+                <code>&lt;h1&gt;</code> por página — é importante para SEO e
+                acessibilidade.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 5 — LINKS E IMAGENS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Links e Imagens</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">links_imagens.html</div>
+            <pre><code><span class="cmt">&lt;!-- Link básico --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://ifsc.edu.br"</span><span class="tag-c">&gt;</span>
+  Site do IFSC
+<span class="tag-c">&lt;/a&gt;</span>
+
+<span class="cmt">&lt;!-- Link em nova aba --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://php.net"</span>
+   <span class="attr">target</span>=<span class="val">"_blank"</span>
+   <span class="attr">rel</span>=<span class="val">"noopener noreferrer"</span><span class="tag-c">&gt;</span>
+  PHP.net
+<span class="tag-c">&lt;/a&gt;</span>
+
+<span class="cmt">&lt;!-- Link para seção interna --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"#contato"</span><span class="tag-c">&gt;</span>Ir ao contato<span class="tag-c">&lt;/a&gt;</span>
+<span class="tag-c">&lt;section</span> <span class="attr">id</span>=<span class="val">"contato"</span><span class="tag-c">&gt;</span>...<span class="tag-c">&lt;/section&gt;</span>
+
+<span class="cmt">&lt;!-- Imagem --&gt;</span>
+<span class="tag-c">&lt;img</span>
+  <span class="attr">src</span>=<span class="val">"foto.jpg"</span>
+  <span class="attr">alt</span>=<span class="val">"Descrição da imagem"</span>
+  <span class="attr">width</span>=<span class="val">"300"</span>
+<span class="tag-c">&gt;</span>
+
+<span class="cmt">&lt;!-- Imagem como link --&gt;</span>
+<span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"pagina.html"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;img</span> <span class="attr">src</span>=<span class="val">"banner.jpg"</span> <span class="attr">alt</span>=<span class="val">"Banner"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;/a&gt;</span></code></pre>
+          </div>
+          <div>
+            <p>
+              <strong>Atributos importantes do <code>&lt;a&gt;</code>:</strong>
+            </p>
+            <table>
+              <tr>
+                <th>Atributo</th>
+                <th>Valores</th>
+              </tr>
+              <tr>
+                <td><code>href</code></td>
+                <td>
+                  URL, <code>#id</code>, <code>mailto:</code>, <code>tel:</code>
+                </td>
+              </tr>
+              <tr>
+                <td><code>target</code></td>
+                <td>
+                  <code>_blank</code> (nova aba), <code>_self</code> (mesma)
+                </td>
+              </tr>
+              <tr>
+                <td><code>rel</code></td>
+                <td><code>noopener noreferrer</code> (segurança)</td>
+              </tr>
+            </table>
+            <p style="margin-top: 12px">
+              <strong
+                >Atributos importantes do <code>&lt;img&gt;</code>:</strong
+              >
+            </p>
+            <table>
+              <tr>
+                <th>Atributo</th>
+                <th>Função</th>
+              </tr>
+              <tr>
+                <td><code>src</code></td>
+                <td>Caminho ou URL da imagem</td>
+              </tr>
+              <tr>
+                <td><code>alt</code></td>
+                <td>Texto alternativo (acessibilidade, SEO)</td>
+              </tr>
+              <tr>
+                <td><code>width</code> / <code>height</code></td>
+                <td>Dimensões em px ou %</td>
+              </tr>
+            </table>
+            <div class="callout yellow">
+              <p>
+                O atributo <strong>alt</strong> é obrigatório por
+                acessibilidade. Descreva o conteúdo da imagem.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 6 — LISTAS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Listas</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">listas.html</div>
+            <pre><code><span class="cmt">&lt;!-- Lista não ordenada (ul) --&gt;</span>
+<span class="tag-c">&lt;ul&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>HTML<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>CSS<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>JavaScript<span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ul&gt;</span>
+
+<span class="cmt">&lt;!-- Lista ordenada (ol) --&gt;</span>
+<span class="tag-c">&lt;ol&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Instalar o Laragon<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Criar o arquivo PHP<span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Testar no browser<span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ol&gt;</span>
+
+<span class="cmt">&lt;!-- Lista aninhada --&gt;</span>
+<span class="tag-c">&lt;ul&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Front-end
+    <span class="tag-c">&lt;ul&gt;</span>
+      <span class="tag-c">&lt;li&gt;</span>HTML<span class="tag-c">&lt;/li&gt;</span>
+      <span class="tag-c">&lt;li&gt;</span>CSS<span class="tag-c">&lt;/li&gt;</span>
+    <span class="tag-c">&lt;/ul&gt;</span>
+  <span class="tag-c">&lt;/li&gt;</span>
+  <span class="tag-c">&lt;li&gt;</span>Back-end
+    <span class="tag-c">&lt;ul&gt;</span>
+      <span class="tag-c">&lt;li&gt;</span>PHP<span class="tag-c">&lt;/li&gt;</span>
+    <span class="tag-c">&lt;/ul&gt;</span>
+  <span class="tag-c">&lt;/li&gt;</span>
+<span class="tag-c">&lt;/ul&gt;</span></code></pre>
+          </div>
+          <div>
+            <p><strong>Resultado:</strong></p>
+            <div class="preview">
+              <p style="font-weight: 600; margin-bottom: 4px">
+                Lista não ordenada:
+              </p>
+              <ul style="margin-bottom: 10px">
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+              </ul>
+              <p style="font-weight: 600; margin-bottom: 4px">
+                Lista ordenada:
+              </p>
+              <ol style="margin-bottom: 10px">
+                <li>Instalar o Laragon</li>
+                <li>Criar o arquivo PHP</li>
+                <li>Testar no browser</li>
+              </ol>
+              <p style="font-weight: 600; margin-bottom: 4px">
+                Lista aninhada:
+              </p>
+              <ul>
+                <li>
+                  Front-end
+                  <ul>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                  </ul>
+                </li>
+                <li>
+                  Back-end
+                  <ul>
+                    <li>PHP</li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 7 — TABELAS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Tabelas</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">tabela.html</div>
+            <pre><code><span class="tag-c">&lt;table&gt;</span>
+  <span class="cmt">&lt;!-- Cabeçalho --&gt;</span>
+  <span class="tag-c">&lt;thead&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>Nome<span class="tag-c">&lt;/th&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>Serviço<span class="tag-c">&lt;/th&gt;</span>
+      <span class="tag-c">&lt;th&gt;</span>Preço<span class="tag-c">&lt;/th&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+  <span class="tag-c">&lt;/thead&gt;</span>
+
+  <span class="cmt">&lt;!-- Corpo --&gt;</span>
+  <span class="tag-c">&lt;tbody&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>Ana<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>Hidráulica<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>R$ 150<span class="tag-c">&lt;/td&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+    <span class="tag-c">&lt;tr&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>Bob<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>Elétrica<span class="tag-c">&lt;/td&gt;</span>
+      <span class="tag-c">&lt;td&gt;</span>R$ 200<span class="tag-c">&lt;/td&gt;</span>
+    <span class="tag-c">&lt;/tr&gt;</span>
+  <span class="tag-c">&lt;/tbody&gt;</span>
+<span class="tag-c">&lt;/table&gt;</span></code></pre>
+          </div>
+          <div>
+            <p><strong>Resultado:</strong></p>
+            <div class="preview">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Serviço</th>
+                    <th>Preço</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Ana</td>
+                    <td>Hidráulica</td>
+                    <td>R$ 150</td>
+                  </tr>
+                  <tr>
+                    <td>Bob</td>
+                    <td>Elétrica</td>
+                    <td>R$ 200</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p style="margin-top: 12px">
+              <strong>Elementos da tabela:</strong>
+            </p>
+            <table>
+              <tr>
+                <th>Tag</th>
+                <th>Função</th>
+              </tr>
+              <tr>
+                <td><code>&lt;table&gt;</code></td>
+                <td>Container principal</td>
+              </tr>
+              <tr>
+                <td><code>&lt;thead&gt;</code></td>
+                <td>Grupo do cabeçalho</td>
+              </tr>
+              <tr>
+                <td><code>&lt;tbody&gt;</code></td>
+                <td>Grupo do corpo</td>
+              </tr>
+              <tr>
+                <td><code>&lt;tr&gt;</code></td>
+                <td>Linha (<em>table row</em>)</td>
+              </tr>
+              <tr>
+                <td><code>&lt;th&gt;</code></td>
+                <td>Célula de cabeçalho</td>
+              </tr>
+              <tr>
+                <td><code>&lt;td&gt;</code></td>
+                <td>Célula de dados</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 8 — FORMULÁRIOS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Formulários</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">formulario.html</div>
+            <pre><code><span class="tag-c">&lt;form</span> <span class="attr">action</span>=<span class="val">"processar.php"</span> <span class="attr">method</span>=<span class="val">"POST"</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;label</span> <span class="attr">for</span>=<span class="val">"nome"</span><span class="tag-c">&gt;</span>Nome:<span class="tag-c">&lt;/label&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"nome"</span>
+         <span class="attr">name</span>=<span class="val">"nome"</span> <span class="attr">required</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;label</span> <span class="attr">for</span>=<span class="val">"email"</span><span class="tag-c">&gt;</span>Email:<span class="tag-c">&lt;/label&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="attr">type</span>=<span class="val">"email"</span> <span class="attr">id</span>=<span class="val">"email"</span>
+         <span class="attr">name</span>=<span class="val">"email"</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;label</span> <span class="attr">for</span>=<span class="val">"preco"</span><span class="tag-c">&gt;</span>Preço:<span class="tag-c">&lt;/label&gt;</span>
+  <span class="tag-c">&lt;input</span> <span class="attr">type</span>=<span class="val">"number"</span> <span class="attr">id</span>=<span class="val">"preco"</span>
+         <span class="attr">name</span>=<span class="val">"preco"</span> <span class="attr">min</span>=<span class="val">"0"</span> <span class="attr">step</span>=<span class="val">"0.01"</span><span class="tag-c">&gt;</span>
+
+  <span class="tag-c">&lt;label</span> <span class="attr">for</span>=<span class="val">"cat"</span><span class="tag-c">&gt;</span>Categoria:<span class="tag-c">&lt;/label&gt;</span>
+  <span class="tag-c">&lt;select</span> <span class="attr">id</span>=<span class="val">"cat"</span> <span class="attr">name</span>=<span class="val">"categoria"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;option</span> <span class="attr">value</span>=<span class="val">"hidraulica"</span><span class="tag-c">&gt;</span>Hidráulica<span class="tag-c">&lt;/option&gt;</span>
+    <span class="tag-c">&lt;option</span> <span class="attr">value</span>=<span class="val">"eletrica"</span><span class="tag-c">&gt;</span>Elétrica<span class="tag-c">&lt;/option&gt;</span>
+  <span class="tag-c">&lt;/select&gt;</span>
+
+  <span class="tag-c">&lt;textarea</span> <span class="attr">name</span>=<span class="val">"descricao"</span> <span class="attr">rows</span>=<span class="val">"3"</span><span class="tag-c">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tag-c">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag-c">&gt;</span>Enviar<span class="tag-c">&lt;/button&gt;</span>
+<span class="tag-c">&lt;/form&gt;</span></code></pre>
+          </div>
+          <div>
+            <p>
+              <strong>Tipos de <code>&lt;input&gt;</code>:</strong>
+            </p>
+            <table>
+              <tr>
+                <th>type</th>
+                <th>Uso</th>
+              </tr>
+              <tr>
+                <td><code>text</code></td>
+                <td>Texto livre</td>
+              </tr>
+              <tr>
+                <td><code>email</code></td>
+                <td>Valida formato de e-mail</td>
+              </tr>
+              <tr>
+                <td><code>password</code></td>
+                <td>Oculta o texto digitado</td>
+              </tr>
+              <tr>
+                <td><code>number</code></td>
+                <td>Só aceita números</td>
+              </tr>
+              <tr>
+                <td><code>date</code></td>
+                <td>Seletor de data</td>
+              </tr>
+              <tr>
+                <td><code>checkbox</code></td>
+                <td>Caixa marcável</td>
+              </tr>
+              <tr>
+                <td><code>radio</code></td>
+                <td>Opção única do grupo</td>
+              </tr>
+              <tr>
+                <td><code>file</code></td>
+                <td>Upload de arquivo</td>
+              </tr>
+              <tr>
+                <td><code>hidden</code></td>
+                <td>Campo invisível</td>
+              </tr>
+            </table>
+            <div class="callout">
+              <p>
+                O atributo <strong>name</strong> define o nome da variável
+                recebida pelo PHP via <code>$_POST['name']</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 9 — HTML SEMÂNTICO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>HTML Semântico</h2>
+        <div class="divider"></div>
+        <p>
+          O HTML5 introduziu tags <strong>semânticas</strong> que descrevem o
+          significado do conteúdo — não apenas o visual. Melhoram SEO,
+          acessibilidade e legibilidade.
+        </p>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">semantico.html</div>
+            <pre><code><span class="tag-c">&lt;header&gt;</span>
+  <span class="tag-c">&lt;nav&gt;</span>
+    <span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"/"</span><span class="tag-c">&gt;</span>Início<span class="tag-c">&lt;/a&gt;</span>
+    <span class="tag-c">&lt;a</span> <span class="attr">href</span>=<span class="val">"/servicos"</span><span class="tag-c">&gt;</span>Serviços<span class="tag-c">&lt;/a&gt;</span>
+  <span class="tag-c">&lt;/nav&gt;</span>
+<span class="tag-c">&lt;/header&gt;</span>
+
+<span class="tag-c">&lt;main&gt;</span>
+  <span class="tag-c">&lt;section&gt;</span>
+    <span class="tag-c">&lt;h2&gt;</span>Serviços Disponíveis<span class="tag-c">&lt;/h2&gt;</span>
+    <span class="tag-c">&lt;article&gt;</span>
+      <span class="tag-c">&lt;h3&gt;</span>Hidráulica<span class="tag-c">&lt;/h3&gt;</span>
+      <span class="tag-c">&lt;p&gt;</span>Reparos em tubulações.<span class="tag-c">&lt;/p&gt;</span>
+    <span class="tag-c">&lt;/article&gt;</span>
+  <span class="tag-c">&lt;/section&gt;</span>
+
+  <span class="tag-c">&lt;aside&gt;</span>
+    <span class="tag-c">&lt;p&gt;</span>Dica: solicite orçamento!<span class="tag-c">&lt;/p&gt;</span>
+  <span class="tag-c">&lt;/aside&gt;</span>
+<span class="tag-c">&lt;/main&gt;</span>
+
+<span class="tag-c">&lt;footer&gt;</span>
+  <span class="tag-c">&lt;p&gt;</span>&amp;copy; 2026 Serviços App<span class="tag-c">&lt;/p&gt;</span>
+<span class="tag-c">&lt;/footer&gt;</span></code></pre>
+          </div>
+          <div>
+            <div class="cards">
+              <div class="card">
+                <div class="icon">🔝</div>
+                <h3>&lt;header&gt;</h3>
+                <p>
+                  Cabeçalho da página ou seção. Geralmente contém logo e
+                  navegação.
+                </p>
+              </div>
+              <div class="card">
+                <div class="icon">🧭</div>
+                <h3>&lt;nav&gt;</h3>
+                <p>Links de navegação principal do site.</p>
+              </div>
+              <div class="card">
+                <div class="icon">📌</div>
+                <h3>&lt;main&gt;</h3>
+                <p>Conteúdo principal único da página.</p>
+              </div>
+              <div class="card">
+                <div class="icon">📦</div>
+                <h3>&lt;section&gt;</h3>
+                <p>Agrupamento temático de conteúdo.</p>
+              </div>
+              <div class="card">
+                <div class="icon">📰</div>
+                <h3>&lt;article&gt;</h3>
+                <p>Conteúdo independente (post, card, produto).</p>
+              </div>
+              <div class="card">
+                <div class="icon">🔚</div>
+                <h3>&lt;footer&gt;</h3>
+                <p>Rodapé da página — copyright, links adicionais.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 10 — O QUE É CSS?
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>O que é CSS?</h2>
+        <div class="divider"></div>
+        <p>
+          <strong>CSS</strong> (<em>Cascading Style Sheets</em>) é a linguagem
+          de <strong>estilo</strong> usada para definir aparência: cores,
+          fontes, tamanhos, espaçamentos, layouts e animações.
+        </p>
+        <div class="two-col">
+          <div>
+            <p><strong>3 formas de aplicar CSS:</strong></p>
+            <div class="code-wrap">
+              <div class="code-label">1. Externo (recomendado)</div>
+              <pre><code><span class="cmt">&lt;!-- no &lt;head&gt; do HTML --&gt;</span>
+<span class="tag-c">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag-c">&gt;</span></code></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">2. Interno (no &lt;head&gt;)</div>
+              <pre><code><span class="tag-c">&lt;style&gt;</span>
+  <span class="sel">h1</span> { <span class="prop">color</span>: <span class="vval">blue</span>; }
+<span class="tag-c">&lt;/style&gt;</span></code></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">3. Inline (evitar)</div>
+              <pre><code><span class="tag-c">&lt;h1</span> <span class="attr">style</span>=<span class="val">"color: blue;"</span><span class="tag-c">&gt;</span>Título<span class="tag-c">&lt;/h1&gt;</span></code></pre>
+            </div>
+          </div>
+          <div>
+            <p><strong>Anatomia de uma regra CSS:</strong></p>
+            <pre><code><span class="cmt">/* Seletor { propriedade: valor; } */</span>
+
+<span class="sel">h1</span> {
+  <span class="prop">color</span>: <span class="vval">#333</span>;
+  <span class="prop">font-size</span>: <span class="vval">2rem</span>;
+  <span class="prop">font-weight</span>: <span class="vval">bold</span>;
+  <span class="prop">margin-bottom</span>: <span class="vval">16px</span>;
+}
+
+<span class="sel">p</span> {
+  <span class="prop">color</span>: <span class="vval">#666</span>;
+  <span class="prop">line-height</span>: <span class="vval">1.6</span>;
+}
+
+<span class="cmt">/* Múltiplos seletores */</span>
+<span class="sel">h1, h2, h3</span> {
+  <span class="prop">font-family</span>: <span class="vval">'Segoe UI', sans-serif</span>;
+}</code></pre>
+            <div class="callout">
+              <p>
+                <strong>Cascata:</strong> quando há conflito, vence a regra mais
+                específica ou a última declarada.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 11 — SELETORES CSS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Seletores CSS</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">seletores.css</div>
+            <pre><code><span class="cmt">/* Elemento */</span>
+<span class="sel">p</span> { <span class="prop">color</span>: <span class="vval">gray</span>; }
+
+<span class="cmt">/* Classe (.) — reutilizável */</span>
+<span class="sel">.destaque</span> { <span class="prop">color</span>: <span class="vval">orange</span>; <span class="prop">font-weight</span>: <span class="vval">bold</span>; }
+<span class="sel">.card</span>      { <span class="prop">border</span>: <span class="vval">1px solid #ccc</span>; <span class="prop">padding</span>: <span class="vval">16px</span>; }
+
+<span class="cmt">/* ID (#) — único por página */</span>
+<span class="sel">#cabecalho</span> { <span class="prop">background</span>: <span class="vval">#1e293b</span>; }
+
+<span class="cmt">/* Filho direto (>) */</span>
+<span class="sel">ul > li</span> { <span class="prop">list-style</span>: <span class="vval">none</span>; }
+
+<span class="cmt">/* Descendente (espaço) */</span>
+<span class="sel">.card p</span> { <span class="prop">font-size</span>: <span class="vval">.9rem</span>; }
+
+<span class="cmt">/* Pseudo-classe */</span>
+<span class="sel">a:hover</span>   { <span class="prop">color</span>: <span class="vval">blue</span>; <span class="prop">text-decoration</span>: <span class="vval">underline</span>; }
+<span class="sel">tr:nth-child(even)</span> { <span class="prop">background</span>: <span class="vval">#f8fafc</span>; }
+<span class="sel">input:focus</span> { <span class="prop">outline</span>: <span class="vval">2px solid blue</span>; }
+
+<span class="cmt">/* Atributo */</span>
+<span class="sel">input[type="email"]</span> { <span class="prop">border-color</span>: <span class="vval">green</span>; }</code></pre>
+          </div>
+          <div>
+            <p><strong>Especificidade (ordem de prioridade):</strong></p>
+            <table>
+              <tr>
+                <th>Seletor</th>
+                <th>Peso</th>
+              </tr>
+              <tr>
+                <td>Elemento (<code>p</code>)</td>
+                <td>0,0,1</td>
+              </tr>
+              <tr>
+                <td>Classe (<code>.card</code>)</td>
+                <td>0,1,0</td>
+              </tr>
+              <tr>
+                <td>ID (<code>#header</code>)</td>
+                <td>1,0,0</td>
+              </tr>
+              <tr>
+                <td>Inline (<code>style=""</code>)</td>
+                <td>1,0,0,0</td>
+              </tr>
+              <tr>
+                <td><code>!important</code></td>
+                <td>Sobrescreve tudo</td>
+              </tr>
+            </table>
+            <div class="callout yellow">
+              <p>
+                Prefira <strong>classes</strong> sobre IDs para estilização. IDs
+                são para JavaScript e âncoras.
+              </p>
+            </div>
+            <div class="callout">
+              <p>
+                Evite <code>!important</code> — use-o apenas em último recurso,
+                pois dificulta a manutenção.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 12 — BOX MODEL
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Box Model — O Modelo de Caixa</h2>
+        <div class="divider"></div>
+        <p>
+          Todo elemento HTML é uma <strong>caixa retangular</strong> composta
+          por 4 camadas:
+        </p>
+        <div class="two-col">
+          <div>
+            <div class="box-model">
+              <div class="bm-margin">
+                <span class="bm-label">margin (espaço externo)</span>
+                <div class="bm-border">
+                  <span class="bm-label">border (borda)</span>
+                  <div class="bm-padding">
+                    <span class="bm-label">padding (espaço interno)</span>
+                    <div class="bm-content">conteúdo (width × height)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">box-model.css</div>
+            <pre><code><span class="sel">.card</span> {
+  <span class="cmt">/* Conteúdo */</span>
+  <span class="prop">width</span>:  <span class="vval">300px</span>;
+  <span class="prop">height</span>: <span class="vval">200px</span>;
+
+  <span class="cmt">/* Espaço interno */</span>
+  <span class="prop">padding</span>: <span class="vval">16px</span>;         <span class="cmt">/* todos os lados */</span>
+  <span class="prop">padding</span>: <span class="vval">8px 16px</span>;    <span class="cmt">/* vertical horizontal */</span>
+  <span class="prop">padding-top</span>: <span class="vval">8px</span>;
+
+  <span class="cmt">/* Borda */</span>
+  <span class="prop">border</span>: <span class="vval">1px solid #ccc</span>;
+  <span class="prop">border-radius</span>: <span class="vval">8px</span>;  <span class="cmt">/* cantos arredondados */</span>
+
+  <span class="cmt">/* Espaço externo */</span>
+  <span class="prop">margin</span>: <span class="vval">16px</span>;
+  <span class="prop">margin</span>: <span class="vval">0 auto</span>;       <span class="cmt">/* centralizar */</span>
+
+  <span class="cmt">/* Inclui padding e border no width */</span>
+  <span class="prop">box-sizing</span>: <span class="vval">border-box</span>;
+}</code></pre>
+            <div class="callout green">
+              <p>
+                Sempre use <code>box-sizing: border-box</code> — evita cálculos
+                de tamanho. Coloque no <code>*</code> (seletor universal).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 13 — FLEXBOX
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Flexbox — Layout Flexível</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">flexbox.css</div>
+            <pre><code><span class="cmt">/* Container flex */</span>
+<span class="sel">.container</span> {
+  <span class="prop">display</span>: <span class="vval">flex</span>;
+
+  <span class="cmt">/* Direção dos itens */</span>
+  <span class="prop">flex-direction</span>: <span class="vval">row</span>;        <span class="cmt">/* →  (padrão) */</span>
+  <span class="prop">flex-direction</span>: <span class="vval">column</span>;     <span class="cmt">/* ↓ */</span>
+
+  <span class="cmt">/* Alinhamento horizontal */</span>
+  <span class="prop">justify-content</span>: <span class="vval">flex-start</span>;  <span class="cmt">/* início */</span>
+  <span class="prop">justify-content</span>: <span class="vval">center</span>;      <span class="cmt">/* centro */</span>
+  <span class="prop">justify-content</span>: <span class="vval">space-between</span>; <span class="cmt">/* espaço entre */</span>
+  <span class="prop">justify-content</span>: <span class="vval">space-around</span>;  <span class="cmt">/* espaço ao redor */</span>
+
+  <span class="cmt">/* Alinhamento vertical */</span>
+  <span class="prop">align-items</span>: <span class="vval">center</span>;
+  <span class="prop">align-items</span>: <span class="vval">stretch</span>;      <span class="cmt">/* preencher (padrão) */</span>
+
+  <span class="cmt">/* Quebra de linha */</span>
+  <span class="prop">flex-wrap</span>: <span class="vval">wrap</span>;
+  <span class="prop">gap</span>: <span class="vval">16px</span>;                  <span class="cmt">/* espaço entre itens */</span>
+}
+
+<span class="cmt">/* Item flex */</span>
+<span class="sel">.item</span> {
+  <span class="prop">flex</span>: <span class="vval">1</span>;       <span class="cmt">/* crescer igualmente */</span>
+  <span class="prop">flex</span>: <span class="vval">0 0 200px</span>; <span class="cmt">/* largura fixa */</span>
+}</code></pre>
+          </div>
+          <div>
+            <p><strong>Casos de uso comuns:</strong></p>
+            <pre><code><span class="cmt">/* Centralizar vertical e horizontal */</span>
+<span class="sel">.centralizado</span> {
+  <span class="prop">display</span>: <span class="vval">flex</span>;
+  <span class="prop">justify-content</span>: <span class="vval">center</span>;
+  <span class="prop">align-items</span>: <span class="vval">center</span>;
+  <span class="prop">min-height</span>: <span class="vval">100vh</span>;
+}
+
+<span class="cmt">/* Navbar */</span>
+<span class="sel">nav</span> {
+  <span class="prop">display</span>: <span class="vval">flex</span>;
+  <span class="prop">justify-content</span>: <span class="vval">space-between</span>;
+  <span class="prop">align-items</span>: <span class="vval">center</span>;
+  <span class="prop">padding</span>: <span class="vval">0 24px</span>;
+}
+
+<span class="cmt">/* Cards em linha */</span>
+<span class="sel">.cards</span> {
+  <span class="prop">display</span>: <span class="vval">flex</span>;
+  <span class="prop">flex-wrap</span>: <span class="vval">wrap</span>;
+  <span class="prop">gap</span>: <span class="vval">16px</span>;
+}</code></pre>
+            <div class="callout blue">
+              <p>
+                Flexbox é ideal para layouts
+                <strong>unidimensionais</strong> (linha ou coluna). Para layouts
+                2D use CSS Grid.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 14 — CSS GRID
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>CSS Grid — Layout em Grade</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">grid.css</div>
+            <pre><code><span class="cmt">/* Container Grid */</span>
+<span class="sel">.grid</span> {
+  <span class="prop">display</span>: <span class="vval">grid</span>;
+
+  <span class="cmt">/* 3 colunas iguais */</span>
+  <span class="prop">grid-template-columns</span>: <span class="vval">1fr 1fr 1fr</span>;
+
+  <span class="cmt">/* Repeat + auto-fit (responsivo) */</span>
+  <span class="prop">grid-template-columns</span>: <span class="vval">repeat(auto-fit, minmax(200px, 1fr))</span>;
+
+  <span class="cmt">/* Colunas de tamanhos diferentes */</span>
+  <span class="prop">grid-template-columns</span>: <span class="vval">250px 1fr</span>;  <span class="cmt">/* sidebar + main */</span>
+
+  <span class="prop">gap</span>: <span class="vval">16px</span>;                          <span class="cmt">/* espaço entre células */</span>
+}
+
+<span class="cmt">/* Item ocupando múltiplas colunas */</span>
+<span class="sel">.destaque</span> {
+  <span class="prop">grid-column</span>: <span class="vval">1 / 3</span>;   <span class="cmt">/* da col 1 até 3 */</span>
+  <span class="prop">grid-column</span>: <span class="vval">span 2</span>;  <span class="cmt">/* ocupar 2 colunas */</span>
+}
+
+<span class="cmt">/* Layout clássico de página */</span>
+<span class="sel">.pagina</span> {
+  <span class="prop">display</span>: <span class="vval">grid</span>;
+  <span class="prop">grid-template-areas</span>:
+    <span class="vval">"header  header"</span>
+    <span class="vval">"sidebar main  "</span>
+    <span class="vval">"footer  footer"</span>;
+  <span class="prop">grid-template-columns</span>: <span class="vval">240px 1fr</span>;
+}</code></pre>
+          </div>
+          <div>
+            <p><strong>Exemplo visual — grid de cards:</strong></p>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin: 10px 0;
+              "
+            >
+              <div
+                style="
+                  background: rgba(249, 115, 22, 0.2);
+                  border: 1px solid var(--accent);
+                  border-radius: 6px;
+                  padding: 10px;
+                  text-align: center;
+                  font-size: 0.8rem;
+                  color: var(--text);
+                "
+              >
+                Card 1
+              </div>
+              <div
+                style="
+                  background: rgba(249, 115, 22, 0.2);
+                  border: 1px solid var(--accent);
+                  border-radius: 6px;
+                  padding: 10px;
+                  text-align: center;
+                  font-size: 0.8rem;
+                  color: var(--text);
+                "
+              >
+                Card 2
+              </div>
+              <div
+                style="
+                  background: rgba(249, 115, 22, 0.2);
+                  border: 1px solid var(--accent);
+                  border-radius: 6px;
+                  padding: 10px;
+                  text-align: center;
+                  font-size: 0.8rem;
+                  color: var(--text);
+                "
+              >
+                Card 3
+              </div>
+              <div
+                style="
+                  background: rgba(96, 165, 250, 0.2);
+                  border: 1px solid var(--blue);
+                  border-radius: 6px;
+                  padding: 10px;
+                  text-align: center;
+                  font-size: 0.8rem;
+                  color: var(--text);
+                  grid-column: span 2;
+                "
+              >
+                Destaque (span 2)
+              </div>
+              <div
+                style="
+                  background: rgba(249, 115, 22, 0.2);
+                  border: 1px solid var(--accent);
+                  border-radius: 6px;
+                  padding: 10px;
+                  text-align: center;
+                  font-size: 0.8rem;
+                  color: var(--text);
+                "
+              >
+                Card 5
+              </div>
+            </div>
+            <div class="callout">
+              <p>
+                <strong>fr</strong> = fração do espaço disponível.
+                <code>1fr 2fr</code> = proporção 1:2 entre as colunas.
+              </p>
+            </div>
+            <div class="callout blue">
+              <p>
+                <code>repeat(auto-fit, minmax(200px, 1fr))</code> cria um grid
+                responsivo automaticamente — o número de colunas se ajusta ao
+                espaço disponível.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 15 — CORES E TIPOGRAFIA
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Cores e Tipografia</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">cores.css</div>
+            <pre><code><span class="cmt">/* Formatos de cor */</span>
+<span class="sel">p</span> {
+  <span class="prop">color</span>: <span class="vval">red</span>;               <span class="cmt">/* nome */</span>
+  <span class="prop">color</span>: <span class="vval">#1e293b</span>;          <span class="cmt">/* hexadecimal */</span>
+  <span class="prop">color</span>: <span class="vval">rgb(30, 41, 59)</span>;   <span class="cmt">/* rgb */</span>
+  <span class="prop">color</span>: <span class="vval">rgba(0, 0, 0, .5)</span>; <span class="cmt">/* rgba (opacidade) */</span>
+  <span class="prop">color</span>: <span class="vval">hsl(220, 40%, 18%)</span>; <span class="cmt">/* hsl */</span>
+}
+
+<span class="cmt">/* Variáveis CSS (custom properties) */</span>
+<span class="sel">:root</span> {
+  <span class="prop">--cor-primaria</span>: <span class="vval">#f97316</span>;
+  <span class="prop">--cor-texto</span>: <span class="vval">#1e293b</span>;
+}
+<span class="sel">h1</span> { <span class="prop">color</span>: <span class="vval">var(--cor-primaria)</span>; }
+
+<span class="cmt">/* Gradiente */</span>
+<span class="sel">.hero</span> {
+  <span class="prop">background</span>: <span class="vval">linear-gradient(135deg, #f97316, #fbbf24)</span>;
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">tipografia.css</div>
+            <pre><code><span class="sel">body</span> {
+  <span class="prop">font-family</span>: <span class="vval">'Segoe UI', system-ui, sans-serif</span>;
+  <span class="prop">font-size</span>: <span class="vval">16px</span>;    <span class="cmt">/* base (1rem = 16px) */</span>
+  <span class="prop">line-height</span>: <span class="vval">1.6</span>;
+}
+
+<span class="sel">h1</span> {
+  <span class="prop">font-size</span>: <span class="vval">2.5rem</span>;  <span class="cmt">/* 40px */</span>
+  <span class="prop">font-weight</span>: <span class="vval">700</span>;   <span class="cmt">/* bold */</span>
+  <span class="prop">letter-spacing</span>: <span class="vval">-.5px</span>;
+}
+
+<span class="cmt">/* Google Fonts */</span>
+<span class="tag-c">&lt;link</span> <span class="attr">href</span>=<span class="val">"https://fonts.googleapis.com/css2?
+  family=Inter:wght@400;700&display=swap"</span>
+  <span class="attr">rel</span>=<span class="val">"stylesheet"</span><span class="tag-c">&gt;</span>
+
+<span class="sel">body</span> { <span class="prop">font-family</span>: <span class="vval">'Inter', sans-serif</span>; }
+
+<span class="cmt">/* Unidades de texto */</span>
+<span class="cmt">/* px = fixo | rem = relativo à raiz | em = relativo ao pai */</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 16 — RESPONSIVIDADE
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Responsividade e Media Queries</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">responsivo.css</div>
+            <pre><code><span class="cmt">/* Mobile First: estilos base para mobile */</span>
+<span class="sel">.cards</span> {
+  <span class="prop">display</span>: <span class="vval">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="vval">1fr</span>;  <span class="cmt">/* 1 coluna */</span>
+  <span class="prop">gap</span>: <span class="vval">16px</span>;
+}
+
+<span class="cmt">/* Tablet (≥ 768px) */</span>
+<span class="sel">@media (min-width: 768px)</span> {
+  <span class="sel">.cards</span> {
+    <span class="prop">grid-template-columns</span>: <span class="vval">repeat(2, 1fr)</span>;
+  }
+}
+
+<span class="cmt">/* Desktop (≥ 1024px) */</span>
+<span class="sel">@media (min-width: 1024px)</span> {
+  <span class="sel">.cards</span> {
+    <span class="prop">grid-template-columns</span>: <span class="vval">repeat(3, 1fr)</span>;
+  }
+  <span class="sel">nav</span> {
+    <span class="prop">display</span>: <span class="vval">flex</span>;
+  }
+}
+
+<span class="cmt">/* Ocultar em mobile */</span>
+<span class="sel">@media (max-width: 767px)</span> {
+  <span class="sel">.sidebar</span> { <span class="prop">display</span>: <span class="vval">none</span>; }
+}</code></pre>
+          </div>
+          <div>
+            <p><strong>Breakpoints comuns:</strong></p>
+            <table>
+              <tr>
+                <th>Nome</th>
+                <th>Largura</th>
+              </tr>
+              <tr>
+                <td>Mobile</td>
+                <td>&lt; 768px</td>
+              </tr>
+              <tr>
+                <td>Tablet</td>
+                <td>768px – 1023px</td>
+              </tr>
+              <tr>
+                <td>Desktop</td>
+                <td>≥ 1024px</td>
+              </tr>
+              <tr>
+                <td>Wide</td>
+                <td>≥ 1280px</td>
+              </tr>
+            </table>
+            <div class="callout">
+              <p>
+                <strong>Mobile First:</strong> comece com estilos para telas
+                pequenas e use <code>min-width</code> para adicionar estilos
+                progressivos. É a abordagem recomendada.
+              </p>
+            </div>
+            <div class="callout yellow">
+              <p>
+                Não esqueça a meta tag viewport no HTML:
+                <code
+                  >&lt;meta name="viewport" content="width=device-width,
+                  initial-scale=1.0"&gt;</code
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 17 — HTML + CSS + PHP JUNTOS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>HTML + CSS + PHP — Juntos na Prática</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">servicos.php — HTML dinâmico com PHP</div>
+            <pre><code><span class="tag-c">&lt;?php</span>
+<span class="cmt">// Dados do banco de dados</span>
+$servicos = [
+  ['titulo' => 'Hidráulica', 'preco' => 150.00],
+  ['titulo' => 'Elétrica',   'preco' => 200.00],
+];
+<span class="tag-c">?&gt;</span>
+<span class="tag-c">&lt;!DOCTYPE html&gt;</span>
+<span class="tag-c">&lt;html</span> <span class="attr">lang</span>=<span class="val">"pt-br"</span><span class="tag-c">&gt;</span>
+<span class="tag-c">&lt;head&gt;</span>
+  <span class="tag-c">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"style.css"</span><span class="tag-c">&gt;</span>
+  <span class="tag-c">&lt;title&gt;</span>Serviços<span class="tag-c">&lt;/title&gt;</span>
+<span class="tag-c">&lt;/head&gt;</span>
+<span class="tag-c">&lt;body&gt;</span>
+  <span class="tag-c">&lt;main</span> <span class="attr">class</span>=<span class="val">"container"</span><span class="tag-c">&gt;</span>
+    <span class="tag-c">&lt;h1&gt;</span>Serviços Disponíveis<span class="tag-c">&lt;/h1&gt;</span>
+    <span class="tag-c">&lt;div</span> <span class="attr">class</span>=<span class="val">"cards"</span><span class="tag-c">&gt;</span>
+      <span class="tag-c">&lt;?php</span> foreach ($servicos as $s): <span class="tag-c">?&gt;</span>
+        <span class="tag-c">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag-c">&gt;</span>
+          <span class="tag-c">&lt;h2&gt;&lt;?=</span> htmlspecialchars($s['titulo']) <span class="tag-c">?&gt;&lt;/h2&gt;</span>
+          <span class="tag-c">&lt;p&gt;</span>R$ <span class="tag-c">&lt;?=</span> number_format($s['preco'], 2, ',', '.') <span class="tag-c">?&gt;&lt;/p&gt;</span>
+        <span class="tag-c">&lt;/div&gt;</span>
+      <span class="tag-c">&lt;?php</span> endforeach; <span class="tag-c">?&gt;</span>
+    <span class="tag-c">&lt;/div&gt;</span>
+  <span class="tag-c">&lt;/main&gt;</span>
+<span class="tag-c">&lt;/body&gt;</span>
+<span class="tag-c">&lt;/html&gt;</span></code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">style.css</div>
+            <pre><code><span class="sel">* </span>{ <span class="prop">box-sizing</span>: <span class="vval">border-box</span>; <span class="prop">margin</span>: <span class="vval">0</span>; <span class="prop">padding</span>: <span class="vval">0</span>; }
+
+<span class="sel">body</span> {
+  <span class="prop">font-family</span>: <span class="vval">'Segoe UI', sans-serif</span>;
+  <span class="prop">background</span>: <span class="vval">#f1f5f9</span>;
+}
+
+<span class="sel">.container</span> {
+  <span class="prop">max-width</span>: <span class="vval">1000px</span>;
+  <span class="prop">margin</span>: <span class="vval">0 auto</span>;
+  <span class="prop">padding</span>: <span class="vval">32px 16px</span>;
+}
+
+<span class="sel">.cards</span> {
+  <span class="prop">display</span>: <span class="vval">grid</span>;
+  <span class="prop">grid-template-columns</span>: <span class="vval">repeat(auto-fit, minmax(200px,1fr))</span>;
+  <span class="prop">gap</span>: <span class="vval">16px</span>;
+}
+
+<span class="sel">.card</span> {
+  <span class="prop">background</span>: <span class="vval">white</span>;
+  <span class="prop">border-radius</span>: <span class="vval">10px</span>;
+  <span class="prop">padding</span>: <span class="vval">20px</span>;
+  <span class="prop">box-shadow</span>: <span class="vval">0 2px 8px rgba(0,0,0,.08)</span>;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 18 — EXERCÍCIO PRÁTICO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Exercício Prático</h2>
+        <div class="divider"></div>
+        <p>
+          Crie uma página HTML com CSS que sirva de
+          <strong>front-end</strong> para o sistema de serviços:
+        </p>
+        <ol>
+          <li>
+            Crie <code>index.html</code> com a estrutura semântica completa
+            (<code>header</code>, <code>main</code>, <code>footer</code>).
+          </li>
+          <li>
+            No <code>header</code>, adicione uma <strong>navbar</strong> com o
+            nome do app e links "Início" e "Serviços".
+          </li>
+          <li>
+            No <code>main</code>, adicione um <strong>formulário</strong> com os
+            campos: título, descrição, preço e categoria.
+          </li>
+          <li>
+            Abaixo do formulário, crie uma <strong>tabela</strong> (estática por
+            enquanto) com 3 serviços de exemplo.
+          </li>
+          <li>
+            Crie <code>style.css</code> separado e aplique: cores, fontes,
+            espaçamentos e layout com Flexbox ou Grid.
+          </li>
+          <li>
+            <strong>Bônus:</strong> torne o layout responsivo com Media Queries.
+          </li>
+          <li>
+            <strong>Bônus 2:</strong> converta o HTML estático para um arquivo
+            <code>.php</code> que gere os dados dinâmicos.
+          </li>
+        </ol>
+        <div class="callout">
+          <p>
+            <strong>Dica:</strong> Inspecione elementos no browser com
+            <kbd>F12</kbd> (DevTools) — visualize o Box Model, edite CSS em
+            tempo real e veja erros no console.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 19 — FERRAMENTAS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Ferramentas Úteis</h2>
+        <div class="divider"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">🛠️</div>
+            <h3>VS Code + Extensões</h3>
+            <p>
+              <strong>Live Server</strong> — recarrega o browser ao salvar.
+              <strong>Prettier</strong> — formata o código automaticamente.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🔍</div>
+            <h3>DevTools (F12)</h3>
+            <p>
+              Inspect, Console, Network, Sources. Indispensável para debug de
+              HTML, CSS e requisições HTTP.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🎨</div>
+            <h3>Color Hunt</h3>
+            <p>
+              colorhunt.co — paletas de cores prontas e harmoniosas para seus
+              projetos.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">📐</div>
+            <h3>Flexbox Froggy</h3>
+            <p>
+              flexboxfroggy.com — jogo interativo para aprender Flexbox de forma
+              divertida.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🏗️</div>
+            <h3>CSS Grid Garden</h3>
+            <p>cssgridgarden.com — jogo para praticar CSS Grid.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📖</div>
+            <h3>MDN Web Docs</h3>
+            <p>
+              developer.mozilla.org — documentação de referência HTML e CSS (em
+              pt-BR).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 20 — RESUMO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Resumo — O que aprendemos</h2>
+        <div class="divider"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">🏗️</div>
+            <h3>Estrutura HTML</h3>
+            <p>DOCTYPE, html, head, body — e as tags semânticas do HTML5.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📝</div>
+            <h3>Tags Essenciais</h3>
+            <p>
+              Títulos, parágrafos, links, imagens, listas, tabelas e
+              formulários.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🎨</div>
+            <h3>CSS Básico</h3>
+            <p>
+              Seletores, especificidade, propriedades de texto, cores e
+              background.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">📦</div>
+            <h3>Box Model</h3>
+            <p>
+              margin, border, padding, content — e
+              <code>box-sizing: border-box</code>.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">↔️</div>
+            <h3>Flexbox e Grid</h3>
+            <p>Layouts modernos, responsivos e sem hacks de float.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📱</div>
+            <h3>Responsividade</h3>
+            <p>Media queries, Mobile First e viewport meta tag.</p>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>Próximo tema:</strong> PHP — adicionar lógica, processar
+            formulários e conectar ao banco de dados!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="hint">← → Navegar | Espaço: avançar</div>
+
+    <script>
+      const slides = document.querySelectorAll(".slide");
+      let current = 0;
+      const total = slides.length;
+
+      function update() {
+        slides.forEach((s, i) => s.classList.toggle("active", i === current));
+        document.getElementById("counter").textContent =
+          `${current + 1} / ${total}`;
+        document.getElementById("btnPrev").disabled = current === 0;
+        document.getElementById("btnNext").disabled = current === total - 1;
+        document.getElementById("progress-bar").style.width =
+          `${((current + 1) / total) * 100}%`;
+      }
+
+      function navigate(dir) {
+        const next = current + dir;
+        if (next >= 0 && next < total) {
+          current = next;
+          update();
+        }
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") navigate(1);
+        if (e.key === "ArrowLeft") navigate(-1);
+      });
+
+      update();
+    </script>
+  </body>
+</html>

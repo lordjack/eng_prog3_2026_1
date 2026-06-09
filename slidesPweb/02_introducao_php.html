@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introdução à Programação com PHP</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --surface2: #334155;
+        --accent: #6366f1;
+        --accent2: #818cf8;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --red: #f87171;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --code-bg: #0d1117;
+        --border: #334155;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ─── NAVEGAÇÃO ─── */
+      #nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        background: rgba(15, 23, 42, 0.92);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+      }
+      #nav .course {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+      }
+      #nav .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      #nav button {
+        background: var(--surface2);
+        color: var(--text);
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background 0.2s;
+      }
+      #nav button:hover {
+        background: var(--accent);
+      }
+      #nav button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+      #nav .counter {
+        font-size: 13px;
+        color: var(--muted);
+        min-width: 70px;
+        text-align: center;
+      }
+
+      /* ─── SLIDES ─── */
+      #deck {
+        margin-top: 52px;
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+      .slide {
+        min-width: 100%;
+        height: calc(100vh - 52px);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 48px 80px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+      }
+      .slide.active {
+        display: flex;
+      }
+
+      /* ─── LAYOUTS ─── */
+      .slide.cover {
+        background: radial-gradient(
+          ellipse at 60% 40%,
+          #312e81 0%,
+          var(--bg) 70%
+        );
+        text-align: center;
+      }
+      .slide.cover .tag {
+        background: var(--accent);
+        color: #fff;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+      .slide.cover h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 16px;
+      }
+      .slide.cover h1 span {
+        color: var(--accent2);
+      }
+      .slide.cover p {
+        font-size: 1.1rem;
+        color: var(--muted);
+        max-width: 600px;
+        margin: 0 auto 32px;
+      }
+      .slide.cover .meta {
+        display: flex;
+        gap: 32px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .slide.cover .meta-item {
+        text-align: center;
+      }
+      .slide.cover .meta-item strong {
+        display: block;
+        font-size: 1.4rem;
+        color: var(--accent2);
+      }
+      .slide.cover .meta-item span {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .slide.content {
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding-top: 60px;
+      }
+      .slide h2 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(90deg, var(--accent2), #a5b4fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .divider {
+        height: 3px;
+        width: 60px;
+        background: var(--accent);
+        border-radius: 2px;
+        margin-bottom: 28px;
+      }
+      .slide p {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.7;
+        max-width: 850px;
+      }
+      .slide ul,
+      .slide ol {
+        padding-left: 22px;
+        margin-bottom: 14px;
+      }
+      .slide li {
+        margin-bottom: 8px;
+        line-height: 1.6;
+        font-size: 0.97rem;
+      }
+      .slide li strong {
+        color: var(--accent2);
+      }
+
+      /* ─── CARDS ─── */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .card:hover {
+        border-color: var(--accent2);
+        transform: translateY(-2px);
+      }
+      .card .icon {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+      .card h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--accent2);
+      }
+      .card p {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      /* ─── CODE ─── */
+      .code-wrap {
+        width: 100%;
+        margin: 10px 0;
+      }
+      .code-label {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      }
+      code {
+        font-family: inherit;
+      }
+      .kw {
+        color: #ff79c6;
+      }
+      .fn {
+        color: #8be9fd;
+      }
+      .str {
+        color: #f1fa8c;
+      }
+      .num {
+        color: #bd93f9;
+      }
+      .cmt {
+        color: #6272a4;
+        font-style: italic;
+      }
+      .var {
+        color: #50fa7b;
+      }
+      .cls {
+        color: #ffb86c;
+      }
+      .op {
+        color: #ff5555;
+      }
+
+      /* ─── BADGES / PILLS ─── */
+      .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .pill {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--accent2);
+        border: 1px solid var(--border);
+      }
+      .pill.green {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--green);
+        border-color: var(--green);
+      }
+      .pill.yellow {
+        background: rgba(250, 204, 21, 0.15);
+        color: var(--yellow);
+        border-color: var(--yellow);
+      }
+      .pill.red {
+        background: rgba(248, 113, 113, 0.15);
+        color: var(--red);
+        border-color: var(--red);
+      }
+
+      /* ─── TWO-COL ─── */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        width: 100%;
+      }
+
+      /* ─── CALLOUT ─── */
+      .callout {
+        background: rgba(99, 102, 241, 0.12);
+        border-left: 4px solid var(--accent);
+        border-radius: 0 10px 10px 0;
+        padding: 14px 18px;
+        margin: 12px 0;
+        width: 100%;
+      }
+      .callout.green {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: var(--green);
+      }
+      .callout.yellow {
+        background: rgba(250, 204, 21, 0.1);
+        border-color: var(--yellow);
+      }
+      .callout p {
+        margin: 0;
+        color: var(--text);
+        font-size: 0.92rem;
+      }
+      .callout strong {
+        color: var(--accent2);
+      }
+
+      /* ─── TABLE ─── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        margin: 10px 0;
+      }
+      th {
+        background: var(--surface2);
+        color: var(--accent2);
+        padding: 10px 14px;
+        text-align: left;
+      }
+      td {
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+      }
+      tr:hover td {
+        background: rgba(99, 102, 241, 0.06);
+      }
+
+      /* ─── PROGRESS ─── */
+      #progress {
+        height: 3px;
+        background: var(--surface2);
+      }
+      #progress-bar {
+        height: 100%;
+        background: var(--accent);
+        transition: width 0.3s;
+      }
+
+      /* ─── SECTION DIVIDER SLIDE ─── */
+      .slide.section {
+        background: radial-gradient(
+          ellipse at 30% 60%,
+          rgba(99, 102, 241, 0.3) 0%,
+          transparent 70%
+        );
+        text-align: center;
+      }
+      .slide.section h2 {
+        font-size: 2.8rem;
+        -webkit-text-fill-color: unset;
+        color: var(--text);
+      }
+      .slide.section p {
+        font-size: 1.1rem;
+        text-align: center;
+      }
+      .slide.section .num {
+        font-size: 5rem;
+        font-weight: 900;
+        color: rgba(99, 102, 241, 0.2);
+        position: absolute;
+      }
+
+      /* ─── KEYBOARD HINT ─── */
+      #hint {
+        position: fixed;
+        bottom: 12px;
+        right: 20px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="progress"><div id="progress-bar"></div></div>
+
+    <nav id="nav">
+      <span class="course"
+        >Prog. 3 · IFSC 2026.1 · Eng. Controle e Automação</span
+      >
+      <div class="controls">
+        <button id="btnPrev" onclick="navigate(-1)">← Anterior</button>
+        <span class="counter" id="counter">1 / 22</span>
+        <button id="btnNext" onclick="navigate(1)">Próximo →</button>
+      </div>
+    </nav>
+
+    <div id="deck">
+      <!-- ══════════════════════════════════════════════
+       SLIDE 1 — CAPA
+  ══════════════════════════════════════════════ -->
+      <div class="slide cover active">
+        <h1>Introdução à<br /><span>Programação PHP</span></h1>
+        <p>
+          Da sintaxe básica à criação de uma API REST com PHP puro — fundamentos
+          essenciais para a disciplina.
+        </p>
+        <div class="meta">
+          <div class="meta-item">
+            <strong>PHP 8.x</strong><span>Versão Atual</span>
+          </div>
+          <div class="meta-item">
+            <strong>Back-end</strong><span>Foco da Aula</span>
+          </div>
+          <div class="meta-item"><strong>4h</strong><span>Duração</span></div>
+        </div>
+        <p style="margin-top: 24px; color: var(--muted); font-size: 0.95rem">
+          Professor:
+          <strong style="color: var(--accent2)">Jackson Meires</strong>
+        </p>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 2 — O QUE É PHP?
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>O que é PHP?</h2>
+        <div class="divider"></div>
+        <p>
+          <strong>PHP</strong> (<em>PHP: Hypertext Preprocessor</em>) é uma
+          linguagem de programação <strong>server-side</strong>, de código
+          aberto, amplamente utilizada para desenvolvimento web. O código PHP é
+          interpretado no servidor e o resultado é enviado ao cliente
+          (normalmente HTML ou JSON).
+        </p>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">🗓️</div>
+            <h3>Criado em 1994</h3>
+            <p>Por Rasmus Lerdorf. Hoje gerenciado pelo grupo PHP.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🌐</div>
+            <h3>Onipresente</h3>
+            <p>
+              Presente em ~77% dos servidores web com linguagem conhecida
+              (W3Techs).
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">⚡</div>
+            <h3>Rápido no aprendizado</h3>
+            <p>Sintaxe familiar para quem conhece C, Java ou JavaScript.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🔗</div>
+            <h3>Integração nativa</h3>
+            <p>
+              Suporte nativo a MySQL, PostgreSQL, SQLite, Redis e muito mais.
+            </p>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>No nosso contexto:</strong> usaremos PHP para criar APIs
+            REST que serão consumidas por um app React Native.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 3 — AMBIENTE DE DESENVOLVIMENTO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Ambiente de Desenvolvimento</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div>
+            <p><strong>Laragon</strong> (Windows) — stack tudo-em-um:</p>
+            <ul>
+              <li><strong>Apache</strong> — Servidor HTTP</li>
+              <li><strong>PHP 8.x</strong> — Interpretador</li>
+              <li><strong>MySQL</strong> — Banco de dados</li>
+              <li><strong>phpMyAdmin</strong> — Interface visual BD</li>
+            </ul>
+            <div class="pills">
+              <span class="pill green">✔ Já instalado</span>
+              <span class="pill">laragon.org</span>
+            </div>
+            <p style="margin-top: 12px">Pasta dos projetos:</p>
+            <pre><code>C:\laragon\www\</code></pre>
+            <p>Acesse via browser:</p>
+            <pre><code>http://localhost/pasta_projeto/</code></pre>
+          </div>
+          <div>
+            <p><strong>Fluxo de execução:</strong></p>
+            <div class="callout">
+              <p>1. Browser faz requisição HTTP</p>
+            </div>
+            <div class="callout">
+              <p>2. Apache recebe e encaminha ao PHP</p>
+            </div>
+            <div class="callout">
+              <p>3. PHP executa o script (.php)</p>
+            </div>
+            <div class="callout green">
+              <p>4. Resposta (HTML/JSON) é enviada ao browser</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 4 — PRIMEIRO SCRIPT
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Primeiro Script PHP</h2>
+        <div class="divider"></div>
+        <p>
+          Todo código PHP fica dentro das tags <code>&lt;?php</code> e
+          <code>?&gt;</code>. Em arquivos puramente PHP (sem HTML), a tag de
+          fechamento é opcional e até recomendada omitir.
+        </p>
+        <div class="code-wrap">
+          <div class="code-label">hello.php</div>
+          <pre><code><span class="cmt">// Arquivo: C:\laragon\www\meu-projeto\hello.php</span>
+<span class="kw">&lt;?php</span>
+
+<span class="cmt">// Exibir texto no browser</span>
+<span class="fn">echo</span> <span class="str">"Olá, Mundo!"</span>;
+
+<span class="cmt">// Exibir HTML</span>
+<span class="fn">echo</span> <span class="str">"&lt;h1&gt;Meu primeiro script&lt;/h1&gt;"</span>;
+
+<span class="cmt">// Função de debug: var_dump</span>
+<span class="fn">var_dump</span>(<span class="num">42</span>);
+<span class="fn">var_dump</span>(<span class="str">"texto"</span>);
+<span class="fn">var_dump</span>(<span class="kw">true</span>);
+
+<span class="cmt">// print_r para arrays</span>
+<span class="fn">print_r</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]);</code></pre>
+        </div>
+        <div class="callout yellow">
+          <p>
+            <strong>⚠ Atenção:</strong> PHP é
+            <strong>sensível a maiúsculas</strong> em nomes de variáveis (<code
+              >$nome</code
+            >
+            ≠ <code>$Nome</code>), mas <strong>não</strong> em nomes de funções
+            e palavras-chave.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 5 — VARIÁVEIS E TIPOS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Variáveis e Tipos de Dados</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">variaveis.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="cmt">// Variáveis começam com $</span>
+<span class="var">$nome</span>   = <span class="str">"Maria"</span>;      <span class="cmt">// string</span>
+<span class="var">$idade</span>  = <span class="num">25</span>;           <span class="cmt">// int</span>
+<span class="var">$altura</span> = <span class="num">1.68</span>;         <span class="cmt">// float</span>
+<span class="var">$ativo</span>  = <span class="kw">true</span>;         <span class="cmt">// bool</span>
+<span class="var">$nulo</span>   = <span class="kw">null</span>;         <span class="cmt">// null</span>
+
+<span class="cmt">// Verificar tipo</span>
+<span class="fn">gettype</span>(<span class="var">$nome</span>);     <span class="cmt">// "string"</span>
+<span class="fn">is_int</span>(<span class="var">$idade</span>);     <span class="cmt">// true</span>
+<span class="fn">is_string</span>(<span class="var">$nome</span>); <span class="cmt">// true</span>
+
+<span class="cmt">// Casting (conversão)</span>
+<span class="var">$num</span>  = (<span class="kw">int</span>) <span class="str">"42abc"</span>; <span class="cmt">// 42</span>
+<span class="var">$str</span>  = (<span class="kw">string</span>) <span class="num">100</span>; <span class="cmt">// "100"</span>
+<span class="var">$bool</span> = (<span class="kw">bool</span>) <span class="num">0</span>;      <span class="cmt">// false</span></code></pre>
+          </div>
+          <div>
+            <p>
+              <strong>Tipagem dinâmica</strong> — PHP infere o tipo
+              automaticamente.
+            </p>
+            <table>
+              <tr>
+                <th>Tipo</th>
+                <th>Exemplo</th>
+              </tr>
+              <tr>
+                <td>string</td>
+                <td><code>"texto"</code>, <code>'texto'</code></td>
+              </tr>
+              <tr>
+                <td>int</td>
+                <td><code>42</code>, <code>-10</code></td>
+              </tr>
+              <tr>
+                <td>float</td>
+                <td><code>3.14</code>, <code>1.0e3</code></td>
+              </tr>
+              <tr>
+                <td>bool</td>
+                <td><code>true</code>, <code>false</code></td>
+              </tr>
+              <tr>
+                <td>array</td>
+                <td><code>[1, 2, 3]</code></td>
+              </tr>
+              <tr>
+                <td>null</td>
+                <td><code>null</code></td>
+              </tr>
+            </table>
+            <div class="callout">
+              <p>
+                <strong>PHP 8 Declaration:</strong> você pode declarar tipos
+                para tornar o código mais seguro:
+                <code>function soma(int $a, int $b): int</code>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 6 — STRINGS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Strings e Interpolação</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">strings.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="var">$nome</span> = <span class="str">"João"</span>;
+<span class="var">$idade</span> = <span class="num">20</span>;
+
+<span class="cmt">// Aspas duplas: interpola variáveis</span>
+<span class="fn">echo</span> <span class="str">"Olá, <span class="var">$nome</span>! Você tem <span class="var">$idade</span> anos."</span>;
+
+<span class="cmt">// Aspas simples: literal (mais rápido)</span>
+<span class="fn">echo</span> <span class="str">'Olá, $nome!'</span>; <span class="cmt">// imprime $nome</span>
+
+<span class="cmt">// Concatenação com ponto (.)</span>
+<span class="fn">echo</span> <span class="str">"Nome: "</span> . <span class="var">$nome</span> . <span class="str">", Idade: "</span> . <span class="var">$idade</span>;
+
+<span class="cmt">// Funções úteis de string</span>
+<span class="fn">strlen</span>(<span class="var">$nome</span>);           <span class="cmt">// 4</span>
+<span class="fn">strtoupper</span>(<span class="var">$nome</span>);      <span class="cmt">// "JOÃO"</span>
+<span class="fn">strtolower</span>(<span class="var">$nome</span>);      <span class="cmt">// "joão"</span>
+<span class="fn">str_replace</span>(<span class="str">"o"</span>,<span class="str">"0"</span>,<span class="var">$nome</span>); <span class="cmt">// "Jã0"</span>
+<span class="fn">trim</span>(<span class="str">"  texto  "</span>);       <span class="cmt">// "texto"</span>
+<span class="fn">substr</span>(<span class="var">$nome</span>, <span class="num">0</span>, <span class="num">2</span>);     <span class="cmt">// "Jo"</span>
+<span class="fn">str_contains</span>(<span class="var">$nome</span>,<span class="str">"ão"</span>); <span class="cmt">// true (PHP8)</span></code></pre>
+          </div>
+          <div>
+            <p><strong>Heredoc</strong> — strings multilinha:</p>
+            <pre><code><span class="var">$html</span> = <span class="kw">&lt;&lt;&lt;EOT</span>
+<span class="str">&lt;div&gt;
+  &lt;h1&gt;{$nome}&lt;/h1&gt;
+  &lt;p&gt;Idade: {$idade}&lt;/p&gt;
+&lt;/div&gt;</span>
+<span class="kw">EOT;</span></code></pre>
+            <p style="margin-top: 12px">
+              <strong>sprintf</strong> — formatação:
+            </p>
+            <pre><code><span class="var">$msg</span> = <span class="fn">sprintf</span>(
+  <span class="str">"Nome: %s, Nota: %.1f"</span>,
+  <span class="var">$nome</span>,
+  <span class="num">9.75</span>
+);
+<span class="cmt">// "Nome: João, Nota: 9.8"</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 7 — ESTRUTURAS DE CONTROLE
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Estruturas de Controle</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">controle.php — if / switch</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="var">$nota</span> = <span class="num">7.5</span>;
+
+<span class="cmt">// if / elseif / else</span>
+<span class="kw">if</span> (<span class="var">$nota</span> >= <span class="num">9</span>) {
+    <span class="fn">echo</span> <span class="str">"Excelente!"</span>;
+} <span class="kw">elseif</span> (<span class="var">$nota</span> >= <span class="num">6</span>) {
+    <span class="fn">echo</span> <span class="str">"Aprovado"</span>;
+} <span class="kw">else</span> {
+    <span class="fn">echo</span> <span class="str">"Reprovado"</span>;
+}
+
+<span class="cmt">// Operador ternário</span>
+<span class="var">$status</span> = <span class="var">$nota</span> >= <span class="num">6</span> ? <span class="str">"Aprovado"</span> : <span class="str">"Reprovado"</span>;
+
+<span class="cmt">// Null coalescing (PHP 7+)</span>
+<span class="var">$nome</span> = <span class="var">$_GET</span>[<span class="str">'nome'</span>] ?? <span class="str">'Anônimo'</span>;
+
+<span class="cmt">// switch</span>
+<span class="kw">switch</span> (<span class="var">$nota</span>) {
+    <span class="kw">case</span> <span class="num">10</span>: <span class="fn">echo</span> <span class="str">"Perfeito"</span>; <span class="kw">break</span>;
+    <span class="kw">case</span>  <span class="num">9</span>: <span class="fn">echo</span> <span class="str">"Ótimo"</span>;    <span class="kw">break</span>;
+    <span class="kw">default</span>: <span class="fn">echo</span> <span class="str">"OK"</span>;
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">controle.php — loops</div>
+            <pre><code><span class="cmt">// for clássico</span>
+<span class="kw">for</span> (<span class="var">$i</span> = <span class="num">0</span>; <span class="var">$i</span> < <span class="num">5</span>; <span class="var">$i</span>++) {
+    <span class="fn">echo</span> <span class="var">$i</span> . <span class="str">" "</span>;
+}
+<span class="cmt">// 0 1 2 3 4</span>
+
+<span class="cmt">// while</span>
+<span class="var">$n</span> = <span class="num">1</span>;
+<span class="kw">while</span> (<span class="var">$n</span> <= <span class="num">5</span>) {
+    <span class="fn">echo</span> <span class="var">$n</span>++ . <span class="str">" "</span>;
+}
+
+<span class="cmt">// foreach (ideal para arrays)</span>
+<span class="var">$frutas</span> = [<span class="str">"Maçã"</span>, <span class="str">"Banana"</span>, <span class="str">"Uva"</span>];
+<span class="kw">foreach</span> (<span class="var">$frutas</span> <span class="kw">as</span> <span class="var">$fruta</span>) {
+    <span class="fn">echo</span> <span class="var">$fruta</span> . <span class="str">"&lt;br&gt;"</span>;
+}
+
+<span class="cmt">// foreach com chave => valor</span>
+<span class="var">$pessoa</span> = [<span class="str">'nome'</span> => <span class="str">'Ana'</span>, <span class="str">'idade'</span> => <span class="num">22</span>];
+<span class="kw">foreach</span> (<span class="var">$pessoa</span> <span class="kw">as</span> <span class="var">$chave</span> => <span class="var">$valor</span>) {
+    <span class="fn">echo</span> <span class="str">"<span class="var">$chave</span>: <span class="var">$valor</span>&lt;br&gt;"</span>;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 8 — FUNÇÕES
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Funções</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">funcoes.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="cmt">// Declaração básica</span>
+<span class="kw">function</span> <span class="fn">somar</span>(<span class="var">$a</span>, <span class="var">$b</span>) {
+    <span class="kw">return</span> <span class="var">$a</span> + <span class="var">$b</span>;
+}
+<span class="fn">echo</span> <span class="fn">somar</span>(<span class="num">3</span>, <span class="num">4</span>); <span class="cmt">// 7</span>
+
+<span class="cmt">// Parâmetros com valor padrão</span>
+<span class="kw">function</span> <span class="fn">cumprimentar</span>(<span class="var">$nome</span>, <span class="var">$saudacao</span> = <span class="str">"Olá"</span>) {
+    <span class="kw">return</span> <span class="str">"<span class="var">$saudacao</span>, <span class="var">$nome</span>!"</span>;
+}
+<span class="fn">echo</span> <span class="fn">cumprimentar</span>(<span class="str">"Pedro"</span>);         <span class="cmt">// Olá, Pedro!</span>
+<span class="fn">echo</span> <span class="fn">cumprimentar</span>(<span class="str">"Pedro"</span>, <span class="str">"Oi"</span>); <span class="cmt">// Oi, Pedro!</span>
+
+<span class="cmt">// Tipos declarados (PHP 7+)</span>
+<span class="kw">function</span> <span class="fn">dividir</span>(<span class="kw">float</span> <span class="var">$a</span>, <span class="kw">float</span> <span class="var">$b</span>): <span class="kw">float</span> {
+    <span class="kw">if</span> (<span class="var">$b</span> === <span class="num">0.0</span>) <span class="kw">throw new</span> <span class="cls">Exception</span>(<span class="str">"Divisão por zero!"</span>);
+    <span class="kw">return</span> <span class="var">$a</span> / <span class="var">$b</span>;
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">funcoes.php — arrow functions</div>
+            <pre><code><span class="cmt">// Funções anônimas (closure)</span>
+<span class="var">$dobrar</span> = <span class="kw">function</span>(<span class="var">$n</span>) {
+    <span class="kw">return</span> <span class="var">$n</span> * <span class="num">2</span>;
+};
+<span class="fn">echo</span> <span class="var">$dobrar</span>(<span class="num">5</span>); <span class="cmt">// 10</span>
+
+<span class="cmt">// Arrow function (PHP 7.4+)</span>
+<span class="var">$triplicar</span> = <span class="kw">fn</span>(<span class="var">$n</span>) => <span class="var">$n</span> * <span class="num">3</span>;
+
+<span class="cmt">// Funções de alta ordem (array)</span>
+<span class="var">$nums</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+
+<span class="var">$pares</span> = <span class="fn">array_filter</span>(<span class="var">$nums</span>, <span class="kw">fn</span>(<span class="var">$n</span>) => <span class="var">$n</span> % <span class="num">2</span> === <span class="num">0</span>);
+<span class="cmt">// [2, 4]</span>
+
+<span class="var">$dobrados</span> = <span class="fn">array_map</span>(<span class="kw">fn</span>(<span class="var">$n</span>) => <span class="var">$n</span> * <span class="num">2</span>, <span class="var">$nums</span>);
+<span class="cmt">// [2, 4, 6, 8, 10]</span>
+
+<span class="var">$soma</span> = <span class="fn">array_reduce</span>(<span class="var">$nums</span>, <span class="kw">fn</span>(<span class="var">$carry</span>, <span class="var">$item</span>) => <span class="var">$carry</span> + <span class="var">$item</span>, <span class="num">0</span>);
+<span class="cmt">// 15</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 9 — ARRAYS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Arrays</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">arrays.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="cmt">// Array indexado</span>
+<span class="var">$notas</span> = [<span class="num">8.5</span>, <span class="num">7.0</span>, <span class="num">9.5</span>, <span class="num">6.0</span>];
+<span class="fn">echo</span> <span class="var">$notas</span>[<span class="num">0</span>]; <span class="cmt">// 8.5</span>
+
+<span class="cmt">// Array associativo (como objeto JSON)</span>
+<span class="var">$aluno</span> = [
+    <span class="str">'nome'</span>    => <span class="str">'Ana'</span>,
+    <span class="str">'matricula'</span> => <span class="str">'2024001'</span>,
+    <span class="str">'nota'</span>    => <span class="num">9.5</span>,
+];
+<span class="fn">echo</span> <span class="var">$aluno</span>[<span class="str">'nome'</span>]; <span class="cmt">// Ana</span>
+
+<span class="cmt">// Array multidimensional</span>
+<span class="var">$turma</span> = [
+    [<span class="str">'nome'</span> => <span class="str">'Ana'</span>, <span class="str">'nota'</span> => <span class="num">9.5</span>],
+    [<span class="str">'nome'</span> => <span class="str">'Bob'</span>, <span class="str">'nota'</span> => <span class="num">7.0</span>],
+];
+<span class="fn">echo</span> <span class="var">$turma</span>[<span class="num">1</span>][<span class="str">'nome'</span>]; <span class="cmt">// Bob</span>
+
+<span class="cmt">// Operações comuns</span>
+<span class="var">$notas</span>[] = <span class="num">10</span>;                 <span class="cmt">// adicionar</span>
+<span class="fn">array_push</span>(<span class="var">$notas</span>, <span class="num">8</span>);        <span class="cmt">// adicionar</span>
+<span class="fn">array_pop</span>(<span class="var">$notas</span>);            <span class="cmt">// remover último</span>
+<span class="fn">sort</span>(<span class="var">$notas</span>);                  <span class="cmt">// ordenar</span>
+<span class="fn">count</span>(<span class="var">$notas</span>);                 <span class="cmt">// quantidade</span>
+<span class="fn">in_array</span>(<span class="num">9.5</span>, <span class="var">$notas</span>);        <span class="cmt">// verificar existência</span></code></pre>
+          </div>
+          <div>
+            <p><strong>JSON ↔ Array</strong> — fundamental para APIs:</p>
+            <pre><code><span class="cmt">// Array para JSON</span>
+<span class="var">$dados</span> = [<span class="str">'id'</span> => <span class="num">1</span>, <span class="str">'nome'</span> => <span class="str">'Ana'</span>];
+<span class="var">$json</span> = <span class="fn">json_encode</span>(<span class="var">$dados</span>);
+<span class="cmt">// '{"id":1,"nome":"Ana"}'</span>
+
+<span class="cmt">// JSON para Array associativo</span>
+<span class="var">$arr</span> = <span class="fn">json_decode</span>(<span class="var">$json</span>, <span class="kw">true</span>);
+<span class="fn">echo</span> <span class="var">$arr</span>[<span class="str">'nome'</span>]; <span class="cmt">// Ana</span>
+
+<span class="cmt">// JSON para Objeto stdClass</span>
+<span class="var">$obj</span> = <span class="fn">json_decode</span>(<span class="var">$json</span>);
+<span class="fn">echo</span> <span class="var">$obj</span>-><span class="fn">nome</span>; <span class="cmt">// Ana</span></code></pre>
+            <div class="callout green">
+              <p>
+                <strong>Dica:</strong> Ao criar APIs REST, sempre use
+                <code>json_encode()</code> para responder e defina o header
+                <code>Content-Type: application/json</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 10 — FORMULÁRIOS E SUPERGLOBAIS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Formulários e Superglobais</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">form.html</div>
+            <pre><code>&lt;<span class="kw">form</span> method="<span class="str">POST</span>" action="<span class="str">processar.php</span>"&gt;
+  &lt;<span class="kw">input</span> type="<span class="str">text</span>"  name="<span class="str">nome</span>"  placeholder="<span class="str">Nome</span>"&gt;
+  &lt;<span class="kw">input</span> type="<span class="str">email</span>" name="<span class="str">email</span>" placeholder="<span class="str">Email</span>"&gt;
+  &lt;<span class="kw">button</span> type="<span class="str">submit</span>"&gt;Enviar&lt;/<span class="kw">button</span>&gt;
+&lt;/<span class="kw">form</span>&gt;</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">processar.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="cmt">// $_POST recebe dados do formulário (method="POST")</span>
+<span class="var">$nome</span>  = <span class="var">$_POST</span>[<span class="str">'nome'</span>]  ?? <span class="str">''</span>;
+<span class="var">$email</span> = <span class="var">$_POST</span>[<span class="str">'email'</span>] ?? <span class="str">''</span>;
+
+<span class="cmt">// Sanitização (NUNCA confie no input do usuário!)</span>
+<span class="var">$nome</span>  = <span class="fn">htmlspecialchars</span>(<span class="fn">trim</span>(<span class="var">$nome</span>));
+<span class="var">$email</span> = <span class="fn">filter_var</span>(<span class="var">$email</span>, <span class="fn">FILTER_SANITIZE_EMAIL</span>);
+
+<span class="cmt">// Validação</span>
+<span class="kw">if</span> (!<span class="fn">filter_var</span>(<span class="var">$email</span>, <span class="fn">FILTER_VALIDATE_EMAIL</span>)) {
+    <span class="fn">echo</span> <span class="str">"Email inválido!"</span>;
+    <span class="kw">exit</span>;
+}
+
+<span class="fn">echo</span> <span class="str">"Bem-vindo, <span class="var">$nome</span>!"</span>;</code></pre>
+          </div>
+        </div>
+        <table style="margin-top: 10px">
+          <tr>
+            <th>Superglobal</th>
+            <th>Uso</th>
+          </tr>
+          <tr>
+            <td><code>$_GET</code></td>
+            <td>Parâmetros da URL: <code>?nome=Ana</code></td>
+          </tr>
+          <tr>
+            <td><code>$_POST</code></td>
+            <td>Dados enviados via formulário POST</td>
+          </tr>
+          <tr>
+            <td><code>$_SERVER</code></td>
+            <td>Informações do servidor e da requisição HTTP</td>
+          </tr>
+          <tr>
+            <td><code>$_SESSION</code></td>
+            <td>Dados persistentes entre requisições</td>
+          </tr>
+          <tr>
+            <td><code>$_COOKIE</code></td>
+            <td>Cookies do navegador</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 11 — ORIENTAÇÃO A OBJETOS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Orientação a Objetos (POO)</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">Servico.php — Classe</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="kw">class</span> <span class="cls">Servico</span> {
+    <span class="cmt">// Propriedades (atributos)</span>
+    <span class="kw">private</span> <span class="kw">int</span> <span class="var">$id</span>;
+    <span class="kw">private</span> <span class="kw">string</span> <span class="var">$titulo</span>;
+    <span class="kw">private</span> <span class="kw">float</span> <span class="var">$preco</span>;
+
+    <span class="cmt">// Construtor</span>
+    <span class="kw">public function</span> <span class="fn">__construct</span>(
+        <span class="kw">string</span> <span class="var">$titulo</span>,
+        <span class="kw">float</span> <span class="var">$preco</span>
+    ) {
+        <span class="var">$this</span>-><span class="fn">titulo</span> = <span class="fn">trim</span>(<span class="var">$titulo</span>);
+        <span class="var">$this</span>-><span class="fn">preco</span>  = <span class="var">$preco</span>;
+    }
+
+    <span class="cmt">// Getters</span>
+    <span class="kw">public function</span> <span class="fn">getTitulo</span>(): <span class="kw">string</span> {
+        <span class="kw">return</span> <span class="var">$this</span>-><span class="fn">titulo</span>;
+    }
+    <span class="kw">public function</span> <span class="fn">getPreco</span>(): <span class="kw">float</span> {
+        <span class="kw">return</span> <span class="var">$this</span>-><span class="fn">preco</span>;
+    }
+
+    <span class="cmt">// Método</span>
+    <span class="kw">public function</span> <span class="fn">toArray</span>(): <span class="kw">array</span> {
+        <span class="kw">return</span> [
+            <span class="str">'titulo'</span> => <span class="var">$this</span>-><span class="fn">titulo</span>,
+            <span class="str">'preco'</span>  => <span class="var">$this</span>-><span class="fn">preco</span>,
+        ];
+    }
+}</code></pre>
+          </div>
+          <div>
+            <p><strong>Usando a classe:</strong></p>
+            <pre><code><span class="cmt">// Instanciar objeto</span>
+<span class="var">$s</span> = <span class="kw">new</span> <span class="cls">Servico</span>(<span class="str">"Hidráulica"</span>, <span class="num">150.0</span>);
+
+<span class="fn">echo</span> <span class="var">$s</span>-><span class="fn">getTitulo</span>(); <span class="cmt">// Hidráulica</span>
+<span class="fn">echo</span> <span class="var">$s</span>-><span class="fn">getPreco</span>();  <span class="cmt">// 150</span>
+
+<span class="var">$arr</span> = <span class="var">$s</span>-><span class="fn">toArray</span>();
+<span class="fn">echo</span> <span class="fn">json_encode</span>(<span class="var">$arr</span>);</code></pre>
+            <p style="margin-top: 12px">Conceitos-chave:</p>
+            <ul>
+              <li>
+                <strong>Encapsulamento</strong> — <code>private</code>,
+                <code>protected</code>, <code>public</code>
+              </li>
+              <li>
+                <strong>Herança</strong> — <code>class Filho extends Pai</code>
+              </li>
+              <li><strong>Interface</strong> — contrato de métodos</li>
+              <li><strong>Abstração</strong> — classe abstrata</li>
+            </ul>
+            <div class="callout">
+              <p>
+                O Slim Framework usa intensamente POO — entender classes é
+                fundamental!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 12 — CONEXÃO COM BANCO DE DADOS (PDO)
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Banco de Dados com PDO</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">conexao.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="kw">function</span> <span class="fn">conectar</span>(): <span class="cls">PDO</span> {
+    <span class="var">$host</span> = <span class="str">'localhost'</span>;
+    <span class="var">$db</span>   = <span class="str">'trabalho'</span>;
+    <span class="var">$user</span> = <span class="str">'root'</span>;
+    <span class="var">$pass</span> = <span class="str">''</span>;
+    <span class="var">$dsn</span>  = <span class="str">"mysql:host=<span class="var">$host</span>;dbname=<span class="var">$db</span>;charset=utf8"</span>;
+
+    <span class="kw">try</span> {
+        <span class="var">$pdo</span> = <span class="kw">new</span> <span class="cls">PDO</span>(<span class="var">$dsn</span>, <span class="var">$user</span>, <span class="var">$pass</span>, [
+            <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
+            <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
+        ]);
+        <span class="kw">return</span> <span class="var">$pdo</span>;
+    } <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="var">$e</span>) {
+        <span class="kw">die</span>(<span class="fn">json_encode</span>([<span class="str">'erro'</span> => <span class="var">$e</span>-><span class="fn">getMessage</span>()]));
+    }
+}</code></pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">crud.php — Prepared Statements</div>
+            <pre><code><span class="var">$pdo</span> = <span class="fn">conectar</span>();
+
+<span class="cmt">// READ — buscar todos</span>
+<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM servicos"</span>);
+<span class="var">$rows</span> = <span class="var">$stmt</span>-><span class="fn">fetchAll</span>();
+
+<span class="cmt">// CREATE — prepared statement (seguro!)</span>
+<span class="var">$sql</span> = <span class="str">"INSERT INTO servicos (titulo, preco)
+         VALUES (:titulo, :preco)"</span>;
+<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="var">$sql</span>);
+<span class="var">$stmt</span>-><span class="fn">execute</span>([
+    <span class="str">':titulo'</span> => <span class="str">'Elétrica'</span>,
+    <span class="str">':preco'</span>  => <span class="num">200.00</span>,
+]);
+<span class="var">$novoId</span> = <span class="var">$pdo</span>-><span class="fn">lastInsertId</span>();
+
+<span class="cmt">// UPDATE</span>
+<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(
+    <span class="str">"UPDATE servicos SET preco=:preco WHERE id=:id"</span>
+);
+<span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':preco'</span> => <span class="num">250.00</span>, <span class="str">':id'</span> => <span class="num">1</span>]);
+
+<span class="cmt">// DELETE</span>
+<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"DELETE FROM servicos WHERE id=:id"</span>);
+<span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':id'</span> => <span class="num">1</span>]);</code></pre>
+          </div>
+        </div>
+        <div class="callout yellow">
+          <p>
+            <strong>⚠ Segurança:</strong> Sempre use
+            <strong>Prepared Statements</strong>. NUNCA concatene variáveis
+            diretamente no SQL — isso causa <strong>SQL Injection</strong>!
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 13 — API REST COM PHP PURO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>API REST com PHP Puro</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div>
+            <p>Conceitos REST:</p>
+            <table>
+              <tr>
+                <th>Método HTTP</th>
+                <th>Ação CRUD</th>
+                <th>Exemplo de URL</th>
+              </tr>
+              <tr>
+                <td><span class="pill green">GET</span></td>
+                <td>Read (ler)</td>
+                <td><code>/api/servicos</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill">POST</span></td>
+                <td>Create (criar)</td>
+                <td><code>/api/servicos</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill yellow">PUT</span></td>
+                <td>Update (atualizar)</td>
+                <td><code>/api/servicos/5</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill red">DELETE</span></td>
+                <td>Delete (deletar)</td>
+                <td><code>/api/servicos/5</code></td>
+              </tr>
+            </table>
+          </div>
+          <div class="code-wrap">
+            <div class="code-label">api/servicos.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="fn">header</span>(<span class="str">'Content-Type: application/json'</span>);
+<span class="fn">header</span>(<span class="str">'Access-Control-Allow-Origin: *'</span>);
+
+<span class="kw">require_once</span> <span class="str">'conexao.php'</span>;
+<span class="var">$pdo</span> = <span class="fn">conectar</span>();
+<span class="var">$metodo</span> = <span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>];
+
+<span class="kw">switch</span> (<span class="var">$metodo</span>) {
+    <span class="kw">case</span> <span class="str">'GET'</span>:
+        <span class="var">$rows</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM servicos"</span>)-><span class="fn">fetchAll</span>();
+        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'data'</span> => <span class="var">$rows</span>]);
+        <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'POST'</span>:
+        <span class="var">$body</span> = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="str">'php://input'</span>), <span class="kw">true</span>);
+        <span class="cmt">// ... inserir no banco</span>
+        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'message'</span> => <span class="str">'Criado!'</span>]);
+        <span class="kw">break</span>;
+}</code></pre>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            Esta abordagem funciona, mas fica complicada à medida que a API
+            cresce. É exatamente isso que frameworks como o
+            <strong>Slim</strong> resolvem — próxima aula!
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 14 — INCLUDE / REQUIRE / NAMESPACES
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Organização de Código</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div>
+            <p>
+              <strong>include / require</strong> — reutilização de arquivos:
+            </p>
+            <pre><code><span class="cmt">// include: aviso se não encontrar</span>
+<span class="kw">include</span> <span class="str">'config.php'</span>;
+
+<span class="cmt">// require: erro fatal se não encontrar (prefira!)</span>
+<span class="kw">require</span> <span class="str">'conexao.php'</span>;
+
+<span class="cmt">// _once: inclui apenas uma vez</span>
+<span class="kw">require_once</span> <span class="str">'models/Servico.php'</span>;</code></pre>
+
+            <p style="margin-top: 16px">
+              <strong>Namespaces</strong> — organização modular:
+            </p>
+            <pre><code><span class="cmt">// Em Models/Servico.php:</span>
+<span class="kw">namespace</span> <span class="cls">App\Models</span>;
+
+<span class="kw">class</span> <span class="cls">Servico</span> { <span class="cmt">/* ... */</span> }
+
+<span class="cmt">// Em outro arquivo:</span>
+<span class="kw">use</span> <span class="cls">App\Models\Servico</span>;
+<span class="var">$s</span> = <span class="kw">new</span> <span class="cls">Servico</span>(<span class="str">"Teste"</span>, <span class="num">10</span>);</code></pre>
+          </div>
+          <div>
+            <p><strong>Autoload com Composer</strong> — sem require manual:</p>
+            <pre><code><span class="cmt">// composer.json</span>
+{
+  <span class="str">"autoload"</span>: {
+    <span class="str">"psr-4"</span>: {
+      <span class="str">"App\\"</span>: <span class="str">"src/"</span>
+    }
+  }
+}</code></pre>
+            <pre><code><span class="cmt">// index.php</span>
+<span class="kw">require</span> <span class="str">'vendor/autoload.php'</span>;
+
+<span class="cmt">// PHP encontra automaticamente qualquer classe</span>
+<span class="cmt">// com namespace App\ dentro de src/</span>
+<span class="kw">use</span> <span class="cls">App\Controllers\ServicoController</span>;
+<span class="kw">use</span> <span class="cls">App\Models\Servico</span>;</code></pre>
+            <div class="callout green">
+              <p>
+                O Composer é o gerenciador de dependências padrão do PHP —
+                equivalente ao npm no JavaScript.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 15 — TRATAMENTO DE ERROS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Tratamento de Erros e Exceções</h2>
+        <div class="divider"></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">excecoes.php</div>
+            <pre><code><span class="kw">&lt;?php</span>
+<span class="cmt">// try / catch / finally</span>
+<span class="kw">try</span> {
+    <span class="var">$pdo</span> = <span class="fn">conectar</span>();
+    <span class="var">$result</span> = <span class="fn">buscarServico</span>(<span class="num">99</span>);
+
+    <span class="kw">if</span> (!<span class="var">$result</span>) {
+        <span class="kw">throw new</span> <span class="cls">Exception</span>(<span class="str">"Serviço não encontrado"</span>, <span class="num">404</span>);
+    }
+
+    <span class="fn">echo</span> <span class="fn">json_encode</span>(<span class="var">$result</span>);
+
+} <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="var">$e</span>) {
+    <span class="fn">http_response_code</span>(<span class="num">500</span>);
+    <span class="fn">echo</span> <span class="fn">json_encode</span>([
+        <span class="str">'erro'</span> => <span class="str">'Erro no banco de dados'</span>
+    ]);
+} <span class="kw">catch</span> (<span class="cls">Exception</span> <span class="var">$e</span>) {
+    <span class="fn">http_response_code</span>(<span class="var">$e</span>-><span class="fn">getCode</span>() ?: <span class="num">400</span>);
+    <span class="fn">echo</span> <span class="fn">json_encode</span>([
+        <span class="str">'erro'</span> => <span class="var">$e</span>-><span class="fn">getMessage</span>()
+    ]);
+} <span class="kw">finally</span> {
+    <span class="cmt">// Sempre executa (fechar conexões, logs)</span>
+    <span class="var">$pdo</span> = <span class="kw">null</span>;
+}</code></pre>
+          </div>
+          <div>
+            <p><strong>Códigos de status HTTP</strong> — use sempre!</p>
+            <table>
+              <tr>
+                <th>Código</th>
+                <th>Significado</th>
+              </tr>
+              <tr>
+                <td><span class="pill green">200 OK</span></td>
+                <td>Sucesso</td>
+              </tr>
+              <tr>
+                <td><span class="pill green">201 Created</span></td>
+                <td>Criado com sucesso</td>
+              </tr>
+              <tr>
+                <td><span class="pill yellow">400 Bad Request</span></td>
+                <td>Dados inválidos</td>
+              </tr>
+              <tr>
+                <td><span class="pill yellow">404 Not Found</span></td>
+                <td>Recurso não existe</td>
+              </tr>
+              <tr>
+                <td><span class="pill red">500 Server Error</span></td>
+                <td>Erro interno</td>
+              </tr>
+            </table>
+            <pre><code><span class="cmt">// Definir código de status</span>
+<span class="fn">http_response_code</span>(<span class="num">201</span>);
+
+<span class="cmt">// Redirecionar</span>
+<span class="fn">header</span>(<span class="str">'Location: /nova-pagina'</span>);
+<span class="kw">exit</span>;</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 16 — BOAS PRÁTICAS E SEGURANÇA
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Boas Práticas e Segurança</h2>
+        <div class="divider"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">🛡️</div>
+            <h3>SQL Injection</h3>
+            <p>
+              Sempre use Prepared Statements com PDO. Nunca concatene variáveis
+              no SQL.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🔒</div>
+            <h3>XSS</h3>
+            <p>
+              Use <code>htmlspecialchars()</code> ao exibir dados do usuário em
+              HTML.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">✅</div>
+            <h3>Validação</h3>
+            <p>
+              Use <code>filter_var()</code> para validar emails, URLs e
+              inteiros. Nunca confie no cliente.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">📁</div>
+            <h3>Estrutura</h3>
+            <p>
+              Separe configurações, modelos e controladores em arquivos
+              diferentes.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🔑</div>
+            <h3>Credenciais</h3>
+            <p>
+              Use variáveis de ambiente (<code>.env</code>) para senhas e
+              chaves. Nunca no código.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">📝</div>
+            <h3>PSR Standards</h3>
+            <p>
+              Siga as PSR-1, PSR-4 e PSR-12 para código legível e interoperável.
+            </p>
+          </div>
+        </div>
+        <div class="callout yellow">
+          <p>
+            <strong>Regra de ouro:</strong> Nunca exiba mensagens de erro
+            detalhadas em produção. Use logs no servidor.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 17 — EXERCÍCIO PRÁTICO
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Exercício Prático — Aula 1</h2>
+        <div class="divider"></div>
+        <p>
+          Crie um arquivo PHP que simule uma mini-API de serviços
+          <strong>sem framework</strong>:
+        </p>
+        <ol>
+          <li>
+            Crie a tabela <code>servicos</code> no MySQL com os campos:
+            <code>id</code>, <code>titulo</code>, <code>descricao</code>,
+            <code>preco</code>, <code>criado_em</code>.
+          </li>
+          <li>
+            Crie <code>conexao.php</code> com a função
+            <code>conectar()</code> usando PDO.
+          </li>
+          <li>
+            Crie <code>api/servicos.php</code> que responda ao método
+            <strong>GET</strong> listando todos os serviços em JSON.
+          </li>
+          <li>
+            Adicione suporte ao método <strong>POST</strong> para cadastrar um
+            novo serviço a partir de um JSON no body.
+          </li>
+          <li>
+            <strong>Bônus:</strong> suporte a
+            <code>GET /api/servicos?id=1</code> para buscar um serviço
+            específico.
+          </li>
+        </ol>
+        <div class="callout green">
+          <p><strong>Estrutura esperada da resposta:</strong></p>
+        </div>
+        <pre><code>{
+  <span class="str">"success"</span>: <span class="kw">true</span>,
+  <span class="str">"data"</span>: [
+    { <span class="str">"id"</span>: <span class="num">1</span>, <span class="str">"titulo"</span>: <span class="str">"Hidráulica"</span>, <span class="str">"preco"</span>: <span class="str">"150.00"</span> },
+    { <span class="str">"id"</span>: <span class="num">2</span>, <span class="str">"titulo"</span>: <span class="str">"Elétrica"</span>,  <span class="str">"preco"</span>: <span class="str">"200.00"</span> }
+  ]
+}</code></pre>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 18 — RESUMO PHP
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Resumo — O que aprendemos</h2>
+        <div class="divider"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">📜</div>
+            <h3>Sintaxe Básica</h3>
+            <p>Tags PHP, echo, comentários, sensibilidade a maiúsculas.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📦</div>
+            <h3>Tipos e Variáveis</h3>
+            <p>
+              Tipagem dinâmica, casting, string, int, float, bool, array, null.
+            </p>
+          </div>
+          <div class="card">
+            <div class="icon">🔄</div>
+            <h3>Controle de Fluxo</h3>
+            <p>if/else, switch, for, foreach, while, match (PHP 8).</p>
+          </div>
+          <div class="card">
+            <div class="icon">⚙️</div>
+            <h3>Funções</h3>
+            <p>Declaração, parâmetros padrão, closures, arrow functions.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🗄️</div>
+            <h3>Banco de Dados</h3>
+            <p>PDO, prepared statements, CRUD completo com segurança.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🌐</div>
+            <h3>API REST</h3>
+            <p>Headers HTTP, json_encode, métodos GET/POST/PUT/DELETE.</p>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>Próxima aula (16/06):</strong> Slim Framework — rotas,
+            controllers, models e API REST profissional!
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 19 — REFERÊNCIAS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Referências e Recursos</h2>
+        <div class="divider"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="icon">📖</div>
+            <h3>PHP Manual Oficial</h3>
+            <p>php.net/manual/pt_BR — documentação completa em português.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🎓</div>
+            <h3>PHP The Right Way</h3>
+            <p>phptherightway.com — guia de boas práticas para PHP moderno.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🔧</div>
+            <h3>Composer</h3>
+            <p>getcomposer.org — gerenciador de dependências PHP.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🛢️</div>
+            <h3>PDO</h3>
+            <p>
+              php.net/manual/pt_BR/book.pdo.php — documentação da extensão PDO.
+            </p>
+          </div>
+        </div>
+        <div class="callout">
+          <p>
+            <strong>Repositório do projeto:</strong>
+            <code>http://localhost/pasta_projeto/</code> — veja os exemplos em
+            <code>api/</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="hint">← → Navegar | Espaço: avançar</div>
+
+    <script>
+      const slides = document.querySelectorAll(".slide");
+      let current = 0;
+      const total = slides.length;
+
+      function update() {
+        slides.forEach((s, i) => s.classList.toggle("active", i === current));
+        document.getElementById("counter").textContent =
+          `${current + 1} / ${total}`;
+        document.getElementById("btnPrev").disabled = current === 0;
+        document.getElementById("btnNext").disabled = current === total - 1;
+        document.getElementById("progress-bar").style.width =
+          `${((current + 1) / total) * 100}%`;
+      }
+
+      function navigate(dir) {
+        const next = current + dir;
+        if (next >= 0 && next < total) {
+          current = next;
+          update();
+        }
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") navigate(1);
+        if (e.key === "ArrowLeft") navigate(-1);
+      });
+
+      update();
+    </script>
+  </body>
+</html>
