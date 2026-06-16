@@ -1038,64 +1038,96 @@
        SLIDE 12 — CONEXÃO COM BANCO DE DADOS (PDO)
   ══════════════════════════════════════════════ -->
       <div class="slide content">
-        <h2>Banco de Dados com PDO</h2>
+        <h2>
+          Banco de Dados com PDO — Classe
+          <code style="-webkit-text-fill-color: var(--accent2)">db</code>
+        </h2>
         <div class="divider"></div>
         <div class="two-col">
           <div class="code-wrap">
-            <div class="code-label">conexao.php</div>
+            <div class="code-label">db.class.php — definição da classe</div>
             <pre><code><span class="kw">&lt;?php</span>
-<span class="kw">function</span> <span class="fn">conectar</span>(): <span class="cls">PDO</span> {
-    <span class="var">$host</span> = <span class="str">'localhost'</span>;
-    <span class="var">$db</span>   = <span class="str">'trabalho'</span>;
-    <span class="var">$user</span> = <span class="str">'root'</span>;
-    <span class="var">$pass</span> = <span class="str">''</span>;
-    <span class="var">$dsn</span>  = <span class="str">"mysql:host=<span class="var">$host</span>;dbname=<span class="var">$db</span>;charset=utf8"</span>;
+<span class="kw">class</span> <span class="cls">db</span> {
+    <span class="kw">private</span> <span class="var">$host</span>       = <span class="str">'localhost'</span>;
+    <span class="kw">private</span> <span class="var">$user</span>       = <span class="str">'root'</span>;
+    <span class="kw">private</span> <span class="var">$password</span>   = <span class="str">''</span>;
+    <span class="kw">private</span> <span class="var">$port</span>       = <span class="str">'3306'</span>;
+    <span class="kw">private</span> <span class="var">$dbname</span>     = <span class="str">'db_pweb_202x_x'</span>;
+    <span class="kw">private</span> <span class="var">$table_name</span>;
+    <span class="kw">private</span> <span class="var">$conn</span>; <span class="cmt">// conexão guardada para reutilizar</span>
 
-    <span class="kw">try</span> {
-        <span class="var">$pdo</span> = <span class="kw">new</span> <span class="cls">PDO</span>(<span class="var">$dsn</span>, <span class="var">$user</span>, <span class="var">$pass</span>, [
-            <span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span>            => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>,
-            <span class="cls">PDO</span>::<span class="fn">ATTR_DEFAULT_FETCH_MODE</span> => <span class="cls">PDO</span>::<span class="fn">FETCH_ASSOC</span>,
-        ]);
-        <span class="kw">return</span> <span class="var">$pdo</span>;
-    } <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="var">$e</span>) {
-        <span class="kw">die</span>(<span class="fn">json_encode</span>([<span class="str">'erro'</span> => <span class="var">$e</span>-><span class="fn">getMessage</span>()]));
+    <span class="kw">public function</span> <span class="fn">__construct</span>(<span class="var">$table_name</span>) {
+        <span class="var">$this</span>-><span class="fn">table_name</span> = <span class="var">$table_name</span>;
+        <span class="var">$this</span>-><span class="fn">conn</span> = <span class="var">$this</span>-><span class="fn">connect</span>(); <span class="cmt">// cria conexão uma única vez</span>
     }
+
+    <span class="cmt">// privado: apenas a própria classe pode chamar</span>
+    <span class="kw">private function</span> <span class="fn">connect</span>() {
+        <span class="kw">try</span> {
+            <span class="kw">return new</span> <span class="cls">PDO</span>(
+                <span class="str">"mysql:host=<span class="var">$this->host</span>;dbname=<span class="var">$this->dbname</span>;port=<span class="var">$this->port</span>;charset=utf8"</span>,
+                <span class="var">$this</span>-><span class="fn">user</span>, <span class="var">$this</span>-><span class="fn">password</span>,
+                [<span class="cls">PDO</span>::<span class="fn">ATTR_ERRMODE</span> => <span class="cls">PDO</span>::<span class="fn">ERRMODE_EXCEPTION</span>]
+            );
+        } <span class="kw">catch</span> (<span class="cls">PDOException</span> <span class="var">$e</span>) {
+            <span class="kw">die</span>(<span class="str">'Erro na conexão: '</span> . <span class="var">$e</span>-><span class="fn">getMessage</span>());
+        }
+    }
+
+    <span class="kw">public function</span> <span class="fn">all</span>()            { <span class="cmt">/* SELECT * FROM tabela */</span> }
+    <span class="kw">public function</span> <span class="fn">find</span>(<span class="var">$id</span>)       { <span class="cmt">/* SELECT … WHERE id = ? */</span> }
+    <span class="kw">public function</span> <span class="fn">findBy</span>(<span class="var">$campo</span>, <span class="var">$valor</span>) { <span class="cmt">/* WHERE campo = ? */</span> }
+    <span class="kw">public function</span> <span class="fn">store</span>(<span class="var">$dados</span>)   { <span class="cmt">/* INSERT dinâmico */</span> }
+    <span class="kw">public function</span> <span class="fn">update</span>(<span class="var">$id</span>, <span class="var">$dados</span>) { <span class="cmt">/* UPDATE … WHERE id */</span> }
+    <span class="kw">public function</span> <span class="fn">destroy</span>(<span class="var">$id</span>)   { <span class="cmt">/* DELETE WHERE id = ? */</span> }
+    <span class="kw">public function</span> <span class="fn">search</span>(<span class="var">$dados</span>) { <span class="cmt">/* WHERE campo LIKE ? — $dados['tipo'] e $dados['valor'] */</span> }
 }</code></pre>
           </div>
           <div class="code-wrap">
-            <div class="code-label">crud.php — Prepared Statements</div>
-            <pre><code><span class="var">$pdo</span> = <span class="fn">conectar</span>();
+            <div class="code-label">uso — CRUD com a classe db</div>
+            <pre><code><span class="kw">require_once</span> <span class="str">'db.class.php'</span>;
 
-<span class="cmt">// READ — buscar todos</span>
-<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM servicos"</span>);
-<span class="var">$rows</span> = <span class="var">$stmt</span>-><span class="fn">fetchAll</span>();
+<span class="cmt">// Instanciar passando o nome da tabela</span>
+<span class="var">$db</span> = <span class="kw">new</span> <span class="cls">db</span>(<span class="str">'servicos'</span>);
 
-<span class="cmt">// CREATE — prepared statement (seguro!)</span>
-<span class="var">$sql</span> = <span class="str">"INSERT INTO servicos (titulo, preco)
-         VALUES (:titulo, :preco)"</span>;
-<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="var">$sql</span>);
-<span class="var">$stmt</span>-><span class="fn">execute</span>([
-    <span class="str">':titulo'</span> => <span class="str">'Elétrica'</span>,
-    <span class="str">':preco'</span>  => <span class="num">200.00</span>,
+<span class="cmt">// READ — listar todos</span>
+<span class="var">$servicos</span> = <span class="var">$db</span>-><span class="fn">all</span>();
+
+<span class="cmt">// READ — buscar por id</span>
+<span class="var">$servico</span> = <span class="var">$db</span>-><span class="fn">find</span>(<span class="num">1</span>);
+
+<span class="cmt">// READ — buscar por campo específico</span>
+<span class="var">$s</span> = <span class="var">$db</span>-><span class="fn">findBy</span>(<span class="str">'titulo'</span>, <span class="str">'Elétrica'</span>);
+
+<span class="cmt">// CREATE — array associativo (sem id)</span>
+<span class="var">$db</span>-><span class="fn">store</span>([
+    <span class="str">'titulo'</span> => <span class="str">'Elétrica'</span>,
+    <span class="str">'preco'</span>  => <span class="num">200.00</span>,
 ]);
-<span class="var">$novoId</span> = <span class="var">$pdo</span>-><span class="fn">lastInsertId</span>();
 
-<span class="cmt">// UPDATE</span>
-<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(
-    <span class="str">"UPDATE servicos SET preco=:preco WHERE id=:id"</span>
-);
-<span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':preco'</span> => <span class="num">250.00</span>, <span class="str">':id'</span> => <span class="num">1</span>]);
+<span class="cmt">// UPDATE — id separado dos dados</span>
+<span class="var">$db</span>-><span class="fn">update</span>(<span class="num">1</span>, [
+    <span class="str">'preco'</span> => <span class="num">250.00</span>,
+]);
 
-<span class="cmt">// DELETE</span>
-<span class="var">$stmt</span> = <span class="var">$pdo</span>-><span class="fn">prepare</span>(<span class="str">"DELETE FROM servicos WHERE id=:id"</span>);
-<span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="str">':id'</span> => <span class="num">1</span>]);</code></pre>
+<span class="cmt">// DELETE — passar o id</span>
+<span class="var">$db</span>-><span class="fn">destroy</span>(<span class="num">1</span>);
+
+<span class="cmt">// SEARCH — busca por campo e valor</span>
+<span class="var">$res</span> = <span class="var">$db</span>-><span class="fn">search</span>([<span class="str">'tipo'</span> => <span class="str">'titulo'</span>, <span class="str">'valor'</span> => <span class="str">'hidráulica'</span>]);
+
+<span class="cmt">// Mesma classe para qualquer tabela!</span>
+<span class="var">$dbCli</span> = <span class="kw">new</span> <span class="cls">db</span>(<span class="str">'clientes'</span>);
+<span class="var">$clientes</span> = <span class="var">$dbCli</span>-><span class="fn">all</span>();</code></pre>
           </div>
         </div>
         <div class="callout yellow">
           <p>
-            <strong>⚠ Segurança:</strong> Sempre use
-            <strong>Prepared Statements</strong>. NUNCA concatene variáveis
-            diretamente no SQL — isso causa <strong>SQL Injection</strong>!
+            <strong>⚠ Segurança:</strong> A classe usa
+            <strong>Prepared Statements</strong> internamente nos métodos
+            <code>store</code>, <code>update</code>, <code>find</code> e
+            <code>destroy</code>. NUNCA concatene variáveis diretamente no SQL —
+            isso causa <strong>SQL Injection</strong>!
           </p>
         </div>
       </div>
@@ -1138,33 +1170,45 @@
             </table>
           </div>
           <div class="code-wrap">
-            <div class="code-label">api/servicos.php</div>
+            <div class="code-label">api/servicos.php — usando db.class.php</div>
             <pre><code><span class="kw">&lt;?php</span>
 <span class="fn">header</span>(<span class="str">'Content-Type: application/json'</span>);
 <span class="fn">header</span>(<span class="str">'Access-Control-Allow-Origin: *'</span>);
 
-<span class="kw">require_once</span> <span class="str">'conexao.php'</span>;
-<span class="var">$pdo</span> = <span class="fn">conectar</span>();
+<span class="kw">require_once</span> <span class="str">'db.class.php'</span>;
+<span class="var">$db</span>     = <span class="kw">new</span> <span class="cls">db</span>(<span class="str">'servicos'</span>);
 <span class="var">$metodo</span> = <span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>];
+<span class="var">$id</span>     = <span class="var">$_GET</span>[<span class="str">'id'</span>] ?? <span class="kw">null</span>;
 
 <span class="kw">switch</span> (<span class="var">$metodo</span>) {
     <span class="kw">case</span> <span class="str">'GET'</span>:
-        <span class="var">$rows</span> = <span class="var">$pdo</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM servicos"</span>)-><span class="fn">fetchAll</span>();
-        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'data'</span> => <span class="var">$rows</span>]);
+        <span class="var">$data</span> = <span class="var">$id</span> ? <span class="var">$db</span>-><span class="fn">find</span>(<span class="var">$id</span>) : <span class="var">$db</span>-><span class="fn">all</span>();
+        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'data'</span> => <span class="var">$data</span>]);
         <span class="kw">break</span>;
     <span class="kw">case</span> <span class="str">'POST'</span>:
         <span class="var">$body</span> = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="str">'php://input'</span>), <span class="kw">true</span>);
-        <span class="cmt">// ... inserir no banco</span>
+        <span class="var">$db</span>-><span class="fn">store</span>(<span class="var">$body</span>);
+        <span class="fn">http_response_code</span>(<span class="num">201</span>);
         <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'message'</span> => <span class="str">'Criado!'</span>]);
+        <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'PUT'</span>:
+        <span class="var">$body</span> = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="str">'php://input'</span>), <span class="kw">true</span>);
+        <span class="var">$db</span>-><span class="fn">update</span>(<span class="var">$id</span>, <span class="var">$body</span>);
+        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'message'</span> => <span class="str">'Atualizado!'</span>]);
+        <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="str">'DELETE'</span>:
+        <span class="var">$db</span>-><span class="fn">destroy</span>(<span class="var">$id</span>);
+        <span class="fn">echo</span> <span class="fn">json_encode</span>([<span class="str">'message'</span> => <span class="str">'Deletado!'</span>]);
         <span class="kw">break</span>;
 }</code></pre>
           </div>
         </div>
         <div class="callout">
           <p>
-            Esta abordagem funciona, mas fica complicada à medida que a API
-            cresce. É exatamente isso que frameworks como o
-            <strong>Slim</strong> resolvem — próxima aula!
+            Com a classe <code>db</code>, o CRUD completo fica limpo e
+            reutilizável. Basta instanciar com o nome da tabela:
+            <code>new db('servicos')</code>. O Slim vai organizar melhor ainda
+            as rotas — próxima aula!
           </p>
         </div>
       </div>
@@ -1184,7 +1228,7 @@
 <span class="kw">include</span> <span class="str">'config.php'</span>;
 
 <span class="cmt">// require: erro fatal se não encontrar (prefira!)</span>
-<span class="kw">require</span> <span class="str">'conexao.php'</span>;
+<span class="kw">require</span> <span class="str">'db.class.php'</span>;
 
 <span class="cmt">// _once: inclui apenas uma vez</span>
 <span class="kw">require_once</span> <span class="str">'models/Servico.php'</span>;</code></pre>
@@ -1238,10 +1282,12 @@
           <div class="code-wrap">
             <div class="code-label">excecoes.php</div>
             <pre><code><span class="kw">&lt;?php</span>
+<span class="kw">require_once</span> <span class="str">'db.class.php'</span>;
+
 <span class="cmt">// try / catch / finally</span>
 <span class="kw">try</span> {
-    <span class="var">$pdo</span> = <span class="fn">conectar</span>();
-    <span class="var">$result</span> = <span class="fn">buscarServico</span>(<span class="num">99</span>);
+    <span class="var">$db</span>     = <span class="kw">new</span> <span class="cls">db</span>(<span class="str">'servicos'</span>);
+    <span class="var">$result</span> = <span class="var">$db</span>-><span class="fn">find</span>(<span class="num">99</span>);
 
     <span class="kw">if</span> (!<span class="var">$result</span>) {
         <span class="kw">throw new</span> <span class="cls">Exception</span>(<span class="str">"Serviço não encontrado"</span>, <span class="num">404</span>);
@@ -1260,8 +1306,8 @@
         <span class="str">'erro'</span> => <span class="var">$e</span>-><span class="fn">getMessage</span>()
     ]);
 } <span class="kw">finally</span> {
-    <span class="cmt">// Sempre executa (fechar conexões, logs)</span>
-    <span class="var">$pdo</span> = <span class="kw">null</span>;
+    <span class="cmt">// Sempre executa (logs, limpeza)</span>
+    <span class="var">$db</span> = <span class="kw">null</span>;
 }</code></pre>
           </div>
           <div>

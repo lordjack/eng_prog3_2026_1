@@ -1,6 +1,7 @@
 /**
- * Converte os slides HTML em arquivos PDF.
- * Usa puppeteer-core com o Chrome instalado no sistema.
+ * Converte os slides HTML em arquivos PDF com texto selecionável.
+ * Usa page.pdf() do Puppeteer (renderização nativa do Chrome → PDF real),
+ * gerando um PDF por slide e mesclando com pdf-lib.
  *
  * Uso:
  *   node gerar_pdf.js
@@ -12,6 +13,7 @@
  */
 
 const puppeteer = require("puppeteer-core");
+const { PDFDocument } = require("pdf-lib");
 const path = require("path");
 const fs = require("fs");
 
@@ -26,31 +28,52 @@ const ARQUIVOS = [
   ["03_slim_framework.html", "03_slim_framework.pdf"],
 ];
 
-// CSS injetado para exibir TODOS os slides como páginas do PDF
-const PRINT_CSS = `
+// CSS base: ocultar UI, resetar layout flex do body, exibir um slide por vez
+const BASE_CSS = `
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-  /* Ocultar barra de navegação, hint e barra de progresso */
   #nav, #hint, #progress { display: none !important; }
 
-  /* Retirar o overflow oculto do body/deck */
-  body  { overflow: visible !important; height: auto !important; }
-  #deck { overflow: visible !important; height: auto !important; display: block !important; }
-
-  /* Cada slide ocupa uma "página" com quebra de página */
-  .slide {
-    display: flex !important;
-    min-width: 100% !important;
-    width: 1280px !important;
-    height: 720px !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    overflow: hidden !important;
-    position: relative !important;
+  html {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-
-  /* Último slide não precisa de quebra depois */
-  .slide:last-child {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;   /* remove flex que causava página em branco */
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  #deck {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    display: block !important;
+  }
+  .slide {
+    display: none !important;
+    width: 1280px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+    margin: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .slide.capture-active {
+    display: flex !important;
+  }
+  /* Impedir quebra de página dentro de qualquer elemento do slide */
+  .slide.capture-active * {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-before: avoid !important;
+    break-before: avoid !important;
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
@@ -75,36 +98,71 @@ async function converter(htmlFile, pdfFile) {
 
   try {
     const page = await browser.newPage();
-
-    // Viewport 16:9
     await page.setViewport({ width: 1280, height: 720 });
 
-    // Carregar o HTML como arquivo local
     await page.goto(`file:///${htmlPath.replace(/\\/g, "/")}`, {
       waitUntil: "networkidle0",
     });
 
-    // Injetar CSS de impressão que exibe todos os slides
-    await page.addStyleTag({ content: PRINT_CSS });
-
-    // Aguardar um frame para garantir que o estilo foi aplicado
+    // Injetar CSS base
+    await page.addStyleTag({ content: BASE_CSS });
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
 
-    // Contar slides para feedback
     const total = await page.evaluate(
       () => document.querySelectorAll(".slide").length,
     );
     console.log(`   ✔ ${total} slides encontrados`);
 
-    // Gerar PDF em formato widescreen (1280×720 pt → 16:9)
-    await page.pdf({
-      path: pdfPath,
-      width: "1280px",
-      height: "720px",
-      printBackground: true,
-      margin: { top: "0", right: "0", bottom: "0", left: "0" },
-    });
+    const mergedDoc = await PDFDocument.create();
 
+    for (let i = 0; i < total; i++) {
+      // Ativar apenas o slide atual com altura livre
+      const slideHeight = await page.evaluate((idx) => {
+        const slides = document.querySelectorAll(".slide");
+        slides.forEach((s) => {
+          s.classList.remove("capture-active");
+          s.removeAttribute("style");
+        });
+        const current = slides[idx];
+        current.classList.add("capture-active");
+        // Forçar layout para medir altura real
+        void current.offsetHeight;
+        return Math.ceil(current.scrollHeight);
+      }, i);
+
+      // Buffer generoso: o Chrome em modo print pode calcular layout
+      // ligeiramente diferente do modo tela, causando quebra de página
+      const pageH = Math.max(slideHeight, 400) + 120;
+
+      // Ajustar viewport para a altura real do slide
+      await page.setViewport({ width: 1280, height: pageH });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
+      // Aguardar extra para garantir layout estabilizado
+      await page.evaluate(() => new Promise((r) => setTimeout(r, 80)));
+
+      // Gerar PDF real deste slide (texto selecionável, não imagem)
+      const pdfBytes = await page.pdf({
+        width: "1280px",
+        height: `${pageH}px`,
+        printBackground: true,
+        margin: { top: "0", right: "0", bottom: "0", left: "0" },
+      });
+
+      // Mesclar todas as páginas geradas (evita perder conteúdo em slides de 2 páginas)
+      const slideDoc = await PDFDocument.load(pdfBytes);
+      const pageCount = slideDoc.getPageCount();
+      const pageIndices = Array.from({ length: pageCount }, (_, k) => k);
+      const pages = await mergedDoc.copyPages(slideDoc, pageIndices);
+      pages.forEach((p) => mergedDoc.addPage(p));
+
+      process.stdout.write(
+        `\r   📄 Slide ${i + 1}/${total} (${pageH}px)      `,
+      );
+    }
+    console.log("");
+
+    const finalBytes = await mergedDoc.save();
+    fs.writeFileSync(pdfPath, finalBytes);
     console.log(`   ✅ Salvo em: ${pdfPath}`);
   } finally {
     await browser.close();
@@ -112,7 +170,9 @@ async function converter(htmlFile, pdfFile) {
 }
 
 (async () => {
-  console.log("🚀 Iniciando conversão de slides para PDF...");
+  console.log(
+    "🚀 Iniciando conversão de slides para PDF (texto selecionável)...",
+  );
   console.log(`   Chrome: ${CHROME_PATH}`);
 
   for (const [html, pdf] of ARQUIVOS) {

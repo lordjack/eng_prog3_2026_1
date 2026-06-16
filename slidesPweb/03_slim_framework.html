@@ -536,7 +536,7 @@
        SLIDE 1 — CAPA
   ══════════════════════════════════════════════ -->
       <div class="slide cover active">
-        <div class="tag">Aula 2 · 16/06/2026</div>
+        <div class="tag">Aula</div>
         <h1>Framework<br /><span>Slim PHP</span></h1>
         <p>
           Construindo APIs REST profissionais com roteamento, controllers,
@@ -553,6 +553,10 @@
             <strong>4h</strong><span>Duração da Aula</span>
           </div>
         </div>
+        <p style="margin-top: 24px; color: var(--muted); font-size: 0.95rem">
+          Professor:
+          <strong style="color: var(--accent2)">Jackson Meires</strong>
+        </p>
       </div>
 
       <!-- ══════════════════════════════════════════════
@@ -1717,7 +1721,118 @@ RewriteRule ^ index.php [QSA,L]</code></pre>
       </div>
 
       <!-- ══════════════════════════════════════════════
-       SLIDE 20 — EXPANSÕES E PRÓXIMOS PASSOS
+       SLIDE 20 — PADRÃO GENÉRICO: GENERIC ACTIONS
+  ══════════════════════════════════════════════ -->
+      <div class="slide content">
+        <h2>Padrão Genérico — Generic Actions + AbstractRepository</h2>
+        <div class="divider"></div>
+        <p>
+          A partir do projeto real <strong>prog3_API_teste</strong>, criamos um
+          padrão reutilizável que reduz 50% do código:
+        </p>
+
+        <div class="two-col">
+          <div>
+            <p><strong>Problema Original:</strong></p>
+            <ul>
+              <li>Cada CRUD (Cliente, Serviço, Prestador) = 430 linhas</li>
+              <li>
+                Muita duplicação de código (método findAll, create, update,
+                delete)
+              </li>
+              <li>Mudança em lógica = editar 6+ arquivos</li>
+              <li>Novo CRUD = 2 horas de trabalho</li>
+            </ul>
+          </div>
+          <div>
+            <p><strong>Solução Implementada:</strong></p>
+            <ul>
+              <li>
+                <strong>AbstractRepository</strong> (170 linhas) — base CRUD
+                genérica
+              </li>
+              <li>
+                <strong>6 GenericActions</strong> — List, View, Create, Update,
+                Delete, Search
+              </li>
+              <li>
+                <strong>Herança simples</strong> — cada novo CRUD = 70 linhas
+              </li>
+              <li><strong>Novo CRUD</strong> = 15 minutos ⚡</li>
+            </ul>
+          </div>
+        </div>
+
+        <p style="margin-top: 16px">
+          <strong>Arquitetura em 3 Camadas:</strong>
+        </p>
+        <div class="flow">
+          <div class="flow-box">
+            Domain<br /><span style="font-size: 12px; color: var(--muted)"
+              >Interfaces</span
+            >
+          </div>
+          <div style="color: var(--accent); margin: 0 12px">→</div>
+          <div class="flow-box">
+            Infrastructure<br /><span
+              style="font-size: 12px; color: var(--muted)"
+              >AbstractRepository</span
+            >
+          </div>
+          <div style="color: var(--accent); margin: 0 12px">→</div>
+          <div class="flow-box">
+            Application<br /><span style="font-size: 12px; color: var(--muted)"
+              >Generic + Specific Actions</span
+            >
+          </div>
+        </div>
+
+        <p style="margin-top: 16px"><strong>Ganhos Medidos:</strong></p>
+        <table>
+          <tr>
+            <th>Métrica</th>
+            <th>Antes</th>
+            <th>Depois</th>
+            <th>Ganho</th>
+          </tr>
+          <tr>
+            <td>Linhas por CRUD</td>
+            <td>430</td>
+            <td>215</td>
+            <td>-50%</td>
+          </tr>
+          <tr>
+            <td>Tempo novo CRUD</td>
+            <td>2h</td>
+            <td>15 min</td>
+            <td>-87.5%</td>
+          </tr>
+          <tr>
+            <td>Reutilização</td>
+            <td>0%</td>
+            <td>83%</td>
+            <td>+83%</td>
+          </tr>
+          <tr>
+            <td>Testes</td>
+            <td>Manuais</td>
+            <td>6/6 ✅</td>
+            <td>100%</td>
+          </tr>
+        </table>
+
+        <div class="callout blue">
+          <p><strong>📚 Veja os documentos do projeto:</strong></p>
+          <p>
+            <code>prog3_API_teste/README.md</code> — Visão geral<br />
+            <code>prog3_API_teste/IMPLEMENTACAO.md</code> — Como replicar<br />
+            <code>prog3_API_teste/PADROES.md</code> — Detalhes técnicos
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════
+       SLIDE 21 — EXPANSÕES E PRÓXIMOS PASSOS
   ══════════════════════════════════════════════ -->
       <div class="slide content">
         <h2>Expansões e Próximos Passos</h2>
@@ -1772,7 +1887,7 @@ RewriteRule ^ index.php [QSA,L]</code></pre>
       </div>
 
       <!-- ══════════════════════════════════════════════
-       SLIDE 21 — COMPARATIVO PHP PURO vs SLIM
+       SLIDE 22 — COMPARATIVO PHP PURO vs SLIM
   ══════════════════════════════════════════════ -->
       <div class="slide content">
         <h2>PHP Puro vs Slim — Comparativo</h2>
@@ -1834,7 +1949,7 @@ RewriteRule ^ index.php [QSA,L]</code></pre>
       </div>
 
       <!-- ══════════════════════════════════════════════
-       SLIDE 22 — RESUMO FINAL
+       SLIDE 23 — RESUMO FINAL
   ══════════════════════════════════════════════ -->
       <div class="slide content">
         <h2>Resumo — O que aprendemos</h2>
@@ -1867,9 +1982,12 @@ RewriteRule ^ index.php [QSA,L]</code></pre>
             <p>CORS e BodyParsing para processar antes/depois das rotas.</p>
           </div>
           <div class="card">
-            <div class="icon">🗄️</div>
-            <h3>Singleton Database</h3>
-            <p>Uma única conexão PDO compartilhada em toda a aplicação.</p>
+            <div class="icon">🎯</div>
+            <h3>Padrão Genérico</h3>
+            <p>
+              Generic Actions + AbstractRepository = -50% código, +87%
+              produtividade.
+            </p>
           </div>
           <div class="card">
             <div class="icon">📱</div>

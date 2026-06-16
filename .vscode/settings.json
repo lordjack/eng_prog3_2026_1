@@ -1,5 +1,25 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "Get-Item": true
+        "Get-Item": true,
+        "/^cd C:\\\\laragon\\\\www\\\\eng_prog3_2026_1\\\\slidesPweb; node -e \"\nconst puppeteer = require\\('puppeteer-core'\\);\nconst path = require\\('path'\\);\nconst fs = require\\('fs'\\);\n\nconst CHROME_PATH = 'C:\\\\\\\\\\\\\\\\Program Files\\\\\\\\\\\\\\\\Google\\\\\\\\\\\\\\\\Chrome\\\\\\\\\\\\\\\\Application\\\\\\\\\\\\\\\\chrome\\.exe';\n\nconst PRINT_CSS = fs\\.readFileSync\\('gerar_pdf\\.js', 'utf8'\\)\\.match\\(/const PRINT_CSS = \\\\`\\(\\[\\\\s\\\\S\\]\\*\\?\\)\\\\`;/\\)\\[1\\];\n\n\\(async \\(\\) => \\{\n  const browser = await puppeteer\\.launch\\(\\{ executablePath: CHROME_PATH, args: \\['--no-sandbox'\\] \\}\\);\n  const page = await browser\\.newPage\\(\\);\n  await page\\.setViewport\\(\\{ width: 1280, height: 720 \\}\\);\n  const filePath = path\\.resolve\\('02_introducao_php\\.html'\\);\n  await page\\.goto\\('file:///' \\+ filePath, \\{ waitUntil: 'networkidle0' \\}\\);\n  await page\\.addStyleTag\\(\\{ content: PRINT_CSS \\}\\);\n  const outPath = path\\.resolve\\('02_introducao_php\\.pdf'\\);\n  await page\\.pdf\\(\\{ path: outPath, width: '1280px', height: '720px', printBackground: true \\}\\);\n  await browser\\.close\\(\\);\n  console\\.log\\('✅ PDF gerado:', outPath\\);\n\\}\\)\\(\\);\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^php test_root\\.php$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^php test_api\\.php$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd c:\\\\laragon\\\\www\\\\eng_prog3_2026_1\\\\prog3_API_teste\\\\app ; Copy-Item routes\\.php routes_backup\\.php ; Copy-Item routes_test\\.php routes\\.php$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd c:\\\\laragon\\\\www\\\\eng_prog3_2026_1\\\\prog3_API_teste && php -r \"\n\\\\\\$curl = curl_init\\('http://localhost/eng_prog3_2026_1/prog3_API_teste/public/clientes-test'\\);\ncurl_setopt\\(\\\\\\$curl, CURLOPT_RETURNTRANSFER, true\\);\ncurl_setopt\\(\\\\\\$curl, CURLOPT_HTTPHEADER, \\['Content-Type: application/json'\\]\\);\n\\\\\\$response = curl_exec\\(\\\\\\$curl\\);\n\\\\\\$code = curl_getinfo\\(\\\\\\$curl, CURLINFO_HTTP_CODE\\);\necho 'HTTP Code: ' \\. \\\\\\$code \\. \\\\\"\\\\n\\\\\";\necho 'Response: ' \\. \\\\\\$response \\. \\\\\"\\\\n\\\\\";\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
