@@ -1,213 +1,113 @@
-# 📱 App Acadêmico — Projeto Base de Programação Mobile
+# Projeto Base Programação Mobile
 
-Aplicativo React Native com **Expo** e **Firebase** desenvolvido como projeto base para aulas de programação mobile.
+Este README descreve o app dentro da pasta `projeto-base-programacao-mobile`.
 
----
+## Visão geral do projeto
 
-## 🚀 Tecnologias utilizadas
+O app é um projeto React Native criado com Expo. Ele usa navegação em pilha (`@react-navigation/native-stack`) para exibir várias telas e integra Firebase Realtime Database para persistência de dados.
 
-| Tecnologia | Finalidade |
-|---|---|
-| React Native + Expo | Framework mobile multiplataforma |
-| React Native Paper | Componentes de UI (Material Design) |
-| React Navigation | Navegação entre telas |
-| Firebase Firestore | Banco de dados em nuvem (NoSQL) |
-| Firebase Storage | Armazenamento de fotos |
-| expo-camera | Câmera nativa |
-| expo-image-picker | Galeria de imagens |
-| expo-location | GPS e geolocalização |
-| expo-clipboard | Área de transferência |
+A aplicação tem três blocos principais:
 
----
+1. Navegação e telas básicas
+2. CRUD de alunos usando Firebase
+3. Consumo de APIs externas e backend próprio
 
-## ⚙️ Configuração inicial
+## Como o app funciona
 
-### 1. Instalar dependências
-```bash
-npm install
-```
+### Navegação
 
-### 2. Configurar o Firebase
-1. Acesse [console.firebase.google.com](https://console.firebase.google.com)
-2. Crie um novo projeto
-3. Ative o **Firestore Database** (modo teste)
-4. Ative o **Storage**
-5. Em Configurações do projeto → Seus aplicativos → SDK, copie as credenciais
-6. Cole em `src/config/firebase.js`
+O arquivo `App.js` configura a navegação do app com `NavigationContainer` e `createNativeStackNavigator`.
 
-### 3. Rodar o projeto
-```bash
-npx expo start
-```
-Escaneie o QR Code com o app **Expo Go** no celular.
+As telas disponíveis são:
+- `HomeScreen` - menu principal do app
+- `IntroducaoRN` - página de introdução aos conceitos de React Native
+- `AlunoListScreen` - lista de alunos
+- `AlunoFormScreen` - formulário para adicionar/editar aluno
+- `APIListScreen` - lista de filmes via API pública
+- `ClienteAPIListScreen` - lista de clientes via backend próprio
+- `ClienteAPIFormScreen` - formulário de cliente via backend próprio
 
----
+### CRUD de alunos com Firebase
 
-## 📁 Estrutura do projeto
+- `src/config/firebase.js` contém a configuração do Firebase e exporta `db` para o Realtime Database.
+- `AlunoListScreen` carrega os dados de `db.ref('aluno')` e exibe os alunos encontrados.
+- `AlunoFormScreen` salva um novo aluno com `db.ref('aluno').push(dataForm)` ou atualiza um aluno existente com `db.ref('aluno/' + id).update(dataForm)`.
+- A exclusão de aluno é feita com `db.ref('aluno').child(id).remove()` após confirmação de pressionar longo.
 
-```
-src/
-├── config/
-│   └── firebase.js          ← Configuração do Firebase
-├── services/
-│   ├── firebaseService.js  ← CRUD genérico reutilizável
-│   ├── alunoService.js      ← CRUD + upload de foto
-│   ├── professorService.js
-│   ├── cursoService.js
-│   ├── turmaService.js
-│   ├── matriculaService.js
-│   └── categoriaService.js
-├── navigation/
-│   └── AppNavigator.js      ← Tabs + Stacks de navegação
-├── components/
-│   ├── Header.js            ← Cabeçalho reutilizável
-│   ├── Loading.js           ← Indicador de carregamento
-│   └── ConfirmDialog.js     ← Diálogo de confirmação
-└── screens/
-    ├── MaisScreen.js        ← Menu de funcionalidades extras
-    ├── alunos/              ← CRUD + foto de perfil
-    ├── professores/         ← CRUD
-    ├── cursos/              ← CRUD
-    ├── turmas/              ← CRUD
-    ├── matriculas/          ← CRUD
-    ├── categorias/          ← CRUD
-    └── recursos/
-        ├── CameraScreen.js  ← Câmera nativa
-        ├── MapaScreen.js    ← GPS + geocodificação reversa
-        └── RecursosScreen.js← Vibração, Clipboard, Share
-```
+Os campos usados no cadastro de aluno são:
+- `nome`
+- `email`
+- `telefone`
 
----
+### Consumo de API pública
 
-## 🏛️ Arquitetura em camadas
+A tela `APIListScreen` busca dados de `https://reactnative.dev/movies.json` e exibe uma lista de filmes.
 
-O projeto segue o padrão de **separação de responsabilidades** dividido em 5 camadas:
+Ela usa `fetch()` para obter o JSON e filtra resultados localmente pelo título.
 
+### Integração com backend próprio
 
-```mermaid
----
-config:
-  layout: elk
----
-flowchart TB
- subgraph UI["🖥️  CAMADA DE APRESENTAÇÃO - Telas"]
-        A2["AlunoFormScreen"]
-        A1["AlunoListScreen"]
-        B2["TurmaFormScreen"]
-        B1["TurmaListScreen"]
-        C2["MatriculaFormScreen"]
-        C1["MatriculaListScreen"]
-  end
- subgraph SVC["⚙️  CAMADA DE SERVIÇOS - Services"]
-        S1["alunoService + uploadFotoAluno"]
-        S2["professorService"]
-        S3["cursoService"]
-        S4["turmaService"]
-        S5["matriculaService"]
-        S6["categoriaService"]
-  end
- subgraph GEN["🔧  SERVIÇO GENÉRICO"]
-        G["firestoreService<br>listar · buscarPorId · criar · atualizar · excluir"]
-  end
- subgraph CFG["🔌  CONFIGURAÇÃO FIREBASE"]
-        F1["firebase.js<br>db = firebase.database<br>storage = firebase.storage"]
-  end
- subgraph DB["☁️  FIREBASE - REALTIME DATABASE"]
-        D3[("cursos")]
-        D2[("professores")]
-        D1[("alunos")]
-        D6[("categorias")]
-        D5[("matriculas")]
-        D4[("turmas")]
-        ST[("Storage Fotos")]
-  end
-    A1 --- A2
-    B1 --- B2
-    C1 --- C2
-    D1 --- D2
-    D2 --- D3
-    D4 --- D5
-    D5 --- D6
-    UI -- chama funções listarAlunos, criarAluno --> SVC
-    SVC -- chama listar, criar, atualizar --> GEN
-    S1 -- "upload direto - Storage" --> CFG
-    GEN -- usa db --> CFG
-    CFG -- Firebase SDK v8 --> DB
-```
+O app também contém uma área de cliente que consome um backend externo definido em `src/config/api.js`.
 
-| Camada | Responsabilidade |
-|---|---|
-| 🖥️ **Telas** | Exibir dados e capturar input do usuário |
-| ⚙️ **Services** | Lógica específica de cada entidade, oculta o nome da coleção |
-| 🔧 **Serviço Genérico** | Operações CRUD reutilizáveis para qualquer coleção |
-| 🔌 **firebase.js** | Configuração e inicialização do SDK |
-| ☁️ **Firebase** | Persistência dos dados na nuvem |
+- `ClienteAPIListScreen` faz requisições `GET` para `API_URL + 'cliente'` e exibe os clientes.
+- A exclusão de cliente usa `DELETE` em `API_URL + 'cliente?id=' + id`.
+- `ClienteAPIFormScreen` faz `POST` para criar clientes e `PUT` para atualizar clientes.
 
-> A seta do `alunoService` direto para `firebase.js` representa o caso especial do **upload de foto**, que acessa o Storage sem passar pelo serviço genérico.
+Os campos do cliente são:
+- `nome`
+- `cpf`
+- `telefone`
 
----
+> Ajuste `src/config/api.js` para apontar para o seu backend correto.
 
-## 📅 Plano de aulas sugerido — 80 horas
+## Estrutura do projeto
 
-### MÓDULO 1 — Fundamentos React Native (16h)
-| # | Conteúdo | Horas |
-|---|---|---|
-| 1 | Ambiente de desenvolvimento (Node, Expo, VS Code, Expo Go) | 2h |
-| 2 | Componentes básicos: View, Text, StyleSheet, Image | 2h |
-| 3 | React Navigation: Stack e Bottom Tabs | 2h |
-| 4 | React Native Paper: Card, Button, TextInput, FAB, Avatar | 2h |
-| 5 | Estado com useState e efeitos com useEffect | 2h |
-| 6 | FlatList, ScrollView e renderização de listas | 2h |
-| 7 | Componentes reutilizáveis (Header, Loading, ConfirmDialog) | 2h |
-| 8 | **Avaliação Módulo 1** | 2h |
+- `App.js` - configuração da navegação e registros das telas
+- `index.js` - entrypoint do Expo
+- `package.json` - dependências e scripts do projeto
+- `src/config/firebase.js` - configuração do Firebase Realtime Database
+- `src/config/api.js` - URL base para o backend de cliente
+- `src/screens/` - telas do app
+  - `HomeScreen.js`
+  - `IntroducaoRN.js`
+  - `AlunoListScreen.js`
+  - `AlunoFormScreen.js`
+  - `APIListScreen.js`
+  - `ClienteApi/ClienteAPIListScreen.js`
+  - `ClienteApi/ClienteAPIFormScreen.js`
 
-### MÓDULO 2 — Firebase e CRUD (20h)
-| # | Conteúdo | Horas |
-|---|---|---|
-| 9 | Introdução ao Firebase: Firestore e estrutura de coleções | 2h |
-| 10 | CRUD de Categorias (tela mais simples para iniciar) | 2h |
-| 11 | CRUD de Professores | 2h |
-| 12 | CRUD de Cursos (campos numéricos e validação) | 2h |
-| 13 | CRUD de Alunos | 2h |
-| 14 | CRUD de Turmas (relacionando com Professor e Curso) | 2h |
-| 15 | CRUD de Matrículas (relacionando Aluno + Turma) | 2h |
-| 16 | Picker/Dropdown para dados relacionados | 2h |
-| 17 | useFocusEffect e recarregamento automático de listas | 2h |
-| 18 | **Avaliação Módulo 2** | 2h |
+## Como executar
 
-### MÓDULO 3 — Recursos Nativos (22h)
-| # | Conteúdo | Horas |
-|---|---|---|
-| 19 | expo-camera: tirar foto e exibir prévia | 2h |
-| 20 | expo-image-picker: galeria e recorte de imagens | 2h |
-| 21 | Firebase Storage: upload de fotos do aluno | 2h |
-| 22 | expo-location: obter coordenadas GPS | 2h |
-| 23 | Geocodificação reversa: converter coordenadas em endereço | 2h |
-| 24 | react-native-maps: mapa interativo com marcadores | 2h |
-| 25 | expo-notifications: notificações push locais | 2h |
-| 26 | expo-barcode-scanner: leitura de QR Code | 2h |
-| 27 | expo-local-authentication: login com biometria | 2h |
-| 28 | Vibração, Clipboard e Share API nativa | 2h |
-| 29 | AsyncStorage: dados offline e cache local | 2h |
+1. Abra o terminal na pasta `projeto-base-programacao-mobile`.
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Inicie o app com Expo:
+   ```bash
+   npm start
+   ```
+4. Abra o app no Expo Go ou em um emulador Android/iOS.
 
-### MÓDULO 4 — Projeto Final (22h)
-| Atividade | Horas |
-|---|---|
-| Definição e planejamento do projeto final | 2h |
-| Desenvolvimento orientado em aula | 14h |
-| Apresentação dos projetos | 4h |
-| Avaliação final | 2h |
+### Scripts úteis
 
----
+- `npm start` - inicia o servidor Expo
+- `npm run android` - inicia Expo e abre no Android
+- `npm run ios` - inicia Expo e abre no iOS
+- `npm run web` - inicia a versão web
 
-## 💡 Ideias de funcionalidades para o projeto final
+## Tecnologias usadas
 
-- **Check-in em aula via QR Code** — Aluno escaneia QR code para registrar presença
-- **Galeria de fotos por turma** — Upload e exibição de fotos das aulas
-- **Notificação de matrícula** — Push notification ao realizar nova matrícula
-- **Login com biometria** — Autenticação do professor via digital/face
-- **Mapa das unidades** — Localização das sedes do curso no mapa
-- **Exportar lista de alunos** — Gerar e compartilhar PDF da lista da turma
-- **Modo offline** — Funcionar sem internet com AsyncStorage
+- Expo
+- React Native
+- React Navigation
+- React Native Paper
+- Firebase Realtime Database
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack).
+## Observações importantes
+
+- O app usa a versão 8 do SDK `firebase`.
+- O Firebase está configurado para o Realtime Database em `src/config/firebase.js`.
+- O backend de cliente é configurado em `src/config/api.js` e deve ser atualizado para o seu domínio/IP.
+- A tela `AlunoListScreen` permite buscar alunos por nome e navegar para edição ao pressionar o item.
+- O botão `+` abre o formulário para cadastrar um novo registro.
